@@ -6,15 +6,15 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 // Screens
-import SignInScreen from './src/screens/auth/signInScreen';
-import SignUpScreen from './src/screens/auth/signUpScreen';
-import SplashScreen from './src/screens/splashScreen';
-import AppInit from './src/AppInit';
+import SignInScreen from './screens/auth/signInScreen';
+import SignUpScreen from './screens/auth/signUpScreen';
+import SplashScreen from './screens/splashScreen';
+import AppInit from './AppInit';
 
 import AsyncStorage from '@react-native-community/async-storage';
-import {stateConditionString} from './src/utils/helpers';
-import {AuthContext} from './src/utils/authContext';
-import {reducer, initialState} from './src/reducer';
+import {stateConditionString} from './utils/helpers';
+import {AuthContext} from './utils/authContext';
+import {reducer, initialState} from './reducer';
 
 const Stack = createStackNavigator();
 
@@ -111,7 +111,10 @@ export default App = ({navigation}) => {
         );
         break;
       case 'LOAD_SIGNIN':
-        arr.push(<Stack.Screen name="Welcome" component={SignInScreen} />);
+        arr.push(<Stack.Screen name="SignIn"  options={{
+          title: 'Welcome',
+        }}
+        component={SignInScreen} />);
         break;
 
       case 'LOAD_HOME':
