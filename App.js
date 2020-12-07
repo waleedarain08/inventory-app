@@ -104,6 +104,7 @@ export default App = ({navigation}) => {
             name="SignUp"
             component={SignUpScreen}
             options={{
+              headerShown:false,
               title: 'Sign Up',
               animationTypeForReplace: state.isSignout ? 'pop' : 'push',
             }}
@@ -111,7 +112,13 @@ export default App = ({navigation}) => {
         );
         break;
       case 'LOAD_SIGNIN':
-        arr.push(<Stack.Screen name="Welcome" component={SignInScreen} />);
+        arr.push(<Stack.Screen name="SignIn" 
+        options={{
+          headerShown:false,
+          title:'Welcome',
+          headerStyle: {backgroundColor: '#8E040A'},
+        }}
+        component={SignInScreen} />);
         break;
 
       case 'LOAD_HOME':
@@ -120,9 +127,7 @@ export default App = ({navigation}) => {
             name="Home"
             component={createHomeStack}
             options={{
-              title: 'Home Screen Parent',
-              headerStyle: {backgroundColor: 'black'},
-              headerTintColor: 'white',
+              headerShown:false
             }}
           />,
         );
