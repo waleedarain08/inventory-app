@@ -19,7 +19,6 @@ const SignUpScreen = ({ navigation }) => {
   const { signUp, signIn } = useContext(AuthContext); // should be signUp
 
   const handleSignUp = () => {
-    // https://indicative.adonisjs.com
     const rules = {
       email: "required|email",
       password: "required|string|min:6|max:40|confirmed",
@@ -58,8 +57,8 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <View style={{ backgroundColor: "#303131", flex: 1 }}>
-      <View style={{ flex: 1}}></View>
-      <View style={{ flex: 3 }}>
+      {/* <View style={{ flex: 1}}></View> */}
+      <View style={{ flex: 1,marginBottom:"5%",justifyContent:"center" }}>
       <Card containerStyle={{ borderRadius: 8 }}>
           <Input
             label={"Email"}
@@ -104,7 +103,7 @@ const SignUpScreen = ({ navigation }) => {
           </Text>
         </Card>
       </View>
-      <View style={{ flex: 1 }}></View>
+      {/* <View style={{ flex: 1 }}></View> */}
     </View>
   );
 };

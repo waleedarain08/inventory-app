@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { validateAll } from "indicative/validator";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Keyboard } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   Input,
@@ -12,8 +12,8 @@ import {
 import { AuthContext } from "../../utils/authContext";
 
 const SignInScreen = ({ navigation }) => {
-  const [emailAddress, setemailAddress] = useState("");
-  const [password, setPassword] = useState("");
+  const [emailAddress, setemailAddress] = useState("adam@gmail.com");
+  const [password, setPassword] = useState("abcdef");
   const [SignUpErrors, setSignUpErrors] = useState({});
 
   const { signIn, signUp } = useContext(AuthContext);
@@ -39,7 +39,8 @@ const SignInScreen = ({ navigation }) => {
 
     validateAll(data, rules, messages)
       .then(() => {
-        console.log("success sign in");
+        console.log("successfull");
+        Keyboard.dismiss();
         signIn({ emailAddress, password });
       })
       .catch((err) => {
@@ -66,7 +67,7 @@ const SignInScreen = ({ navigation }) => {
                 <Icon
                   name='envelope'
                   size={14}
-                  color='#aeaeae'
+                  color='#8E040A'
                   style={{marginRight:"5%",marginLeft:-20}}
                 />}
             onChangeText={setemailAddress}
@@ -82,7 +83,7 @@ const SignInScreen = ({ navigation }) => {
                 <Icon
                   name='lock'
                   size={15}
-                  color='#aeaeae'
+                  color='#8E040A'
                   style={{marginRight:"5%",marginLeft:-20}}
                 />}
             onChangeText={setPassword}

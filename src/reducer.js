@@ -40,6 +40,8 @@ export const reducer = (prevState, action) => {
       return {
         ...prevState,
         isSignedOut: true,
+        isSignedIn: false,
+
       };
   }
 };
