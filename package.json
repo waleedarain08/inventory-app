@@ -25,12 +25,15 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.4.tar.gz",
     "react-native-elements": "1.2.7",
     "react-native-gesture-handler": "1.6.0",
+    "react-native-qrcode-svg": "^6.0.6",
     "react-native-reanimated": "1.7.0",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "2.4.0",
+    "react-native-svg": "^12.1.0",
     "react-native-unimodules": "0.6.0",
     "react-native-vector-icons": "6.6.0",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "react-native-webview": "10.7.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0"

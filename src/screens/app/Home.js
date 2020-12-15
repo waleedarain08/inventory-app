@@ -7,7 +7,6 @@ import {
   StatusBar,
   TouchableOpacity,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Dashboard = ({ navigation }) => {
@@ -16,30 +15,31 @@ const Dashboard = ({ navigation }) => {
       <View style={{ flex: 0.7 }}></View>
       <View style={styles.row}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Create-request")}
-          activeOpacity={0.8}
-          style={styles.column}
-        >
-          <Icon name="note-add" size={40} color="#fff" />
-          <Text style={styles.icontext}>Create{"\n"}Request</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("History")}
-          activeOpacity={0.8}
-          style={styles.column}
-        >
-          <Icon3 name="history" size={40} color="#fff" />
-          <Text style={styles.icontext}>See{"\n"}Hisotry</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.row}>
-        <TouchableOpacity
           onPress={() => navigation.navigate("Scan-qr-code")}
           activeOpacity={0.8}
           style={styles.column}
         >
           <Icon3 name="qrcode-scan" size={40} color="#fff" />
           <Text style={styles.icontext}>Scan{"\n"}QR Code</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("History")}
+          activeOpacity={0.8}
+          style={styles.column}
+        >
+          <Icon3 name="history" size={40} color="#fff" />
+          <Text style={styles.icontext}>Request{"\n"}Hisotry</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.row}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Reports")}
+          activeOpacity={0.8}
+          style={styles.column}
+        >
+          <Icon3 name="file-chart" size={40} color="#fff" />
+          <Text style={styles.icontext}>View{"\n"}Reports</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("Generate-qr-code")}

@@ -16,7 +16,9 @@ import Dashboard from "./src/screens/app/Home";
 import GenerateQR from "./src/screens/app/GenerateQR";
 import ScanQR from "./src/screens/app/ScanQR";
 import History from "./src/screens/app/History";
-import CreateRequest from "./src/screens/app/CreateRequest";
+import Reports from "./src/screens/app/Reports";
+import ReportDetail from "./src/screens/app/ReportDetail";
+
 
 import AsyncStorage from "@react-native-community/async-storage";
 import { stateConditionString } from "./src/utils/helpers";
@@ -30,7 +32,7 @@ const createHomeStack = ({ navigation }) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Welcome"
+        name="Dashboard"
         options={{
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#303131" },
@@ -66,6 +68,7 @@ const createHomeStack = ({ navigation }) => {
       />
       <Stack.Screen
         name="History"
+        title="Requests History"
         options={{
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#303131" },
@@ -73,12 +76,21 @@ const createHomeStack = ({ navigation }) => {
         component={History}
       />
       <Stack.Screen
-        name="Create-request"
+        name="Reports"
         options={{
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#303131" },
         }}
-        component={CreateRequest}
+        component={Reports}
+      />
+      <Stack.Screen
+        name="ReportDetail"
+        options={{
+          title:"",
+          headerTintColor: "#fff",
+          headerStyle: { backgroundColor: "#303131" },
+        }}
+        component={ReportDetail}
       />
     </Stack.Navigator>
   );

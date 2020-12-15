@@ -14,59 +14,50 @@ const DATA = [
     id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
     title: "Waleed J",
     created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
   },
   {
     id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
     title: "Saeed A",
     created_at: "12 Dec 2020",
-    request: "Request for change of Charger",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d72",
     title: "Waleed J",
     created_at: "08 Dec 2020",
-    request: "Request for change of Internet device",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29dv3",
     title: "Saeed A",
     created_at: "08 Dec 2020",
-    request: "Request for change of usb device",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d71",
     title: "Waleed J",
     created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d54",
     title: "Saeed A",
     created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d00",
     title: "Waleed J",
     created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d34",
     title: "Saeed A",
     created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d40",
     title: "Waleed J",
     created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
   },
 ];
 
-export default History = () => {
+export default Reports = ({ navigation }) => {
   const [selectedId, setSelectedId] = useState(
     "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"
   );
@@ -76,23 +67,32 @@ export default History = () => {
     setData(DATA);
   }, []);
 
+  goNext = (item) => {
+    setSelectedId(item.id);
+    navigation.navigate("ReportDetail", { item });
+  };
+
   const Item = ({ item, onPress, style }) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={[styles.title,{fontSize:12}]}>
-          {item.request}
-        </Text>
-        <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text>
+        <Text style={[styles.title, { fontSize: 11 }]}>Emp Id : {item.id}</Text>
       </View>
+      <Icon
+        name="keyboard-arrow-right"
+        style={{ alignItems: "center" }}
+        size={24}
+        color="#fff"
+      />
     </TouchableOpacity>
   );
+
   const renderItem = ({ item }) => {
     const backgroundColor = item.id === selectedId ? "#8E040A" : "#303131";
     return (
       <Item
         item={item}
-        onPress={() => setSelectedId(item.id)}
+        onPress={() => goNext(item)}
         style={{ backgroundColor }}
       />
     );
