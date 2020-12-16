@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { validateAll } from "indicative/validator";
 import QRCode from "react-native-qrcode-svg";
-import {
-  Input,
-  Card,
-  FormValidationMessage,
-  Button,
-} from "react-native-elements";
-
-const GenerateQR = () => {
+import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system";
+import * as Permissions from "expo-permissions";
+import { Input, Card, Button } from "react-native-elements";
+const GenerateQR = ({navigation}) => {
   let logoFromFile = require("../../images/logo.png");
+  const [isLoading, setLoading] = useState(false);
   const [showQR, setQR] = useState(false);
+  const [qrSvg, setSvg] = useState("");
   const [devName, setDevName] = useState("");
   const [machine, setMachine] = useState("");
   const [headPhone, setheadPhone] = useState("");
@@ -19,7 +24,9 @@ const GenerateQR = () => {
   const [mouse, setMouse] = useState("");
   const [keyboard, setKeyboard] = useState("");
   const [FormErrors, setFormErrors] = useState({});
-  const [qrData,setQrData]  = useState([]);
+  const [qrData, setQrData] = useState([]);
+
+  useEffect(() => {}, []);
 
   const handleSubmit = () => {
     const rules = {
@@ -34,8 +41,6 @@ const GenerateQR = () => {
       required: (field) => `${field} is required`,
     };
 
-    //setQrData(qrData=>qrData.concat({'devName':devName}));
-
     validateAll(data, rules, messages)
       .then(() => {
         setQR(true);
@@ -48,31 +53,90 @@ const GenerateQR = () => {
         setFormErrors(formatError);
       });
   };
+
+  const callback = (dataURL) => {
+    setSvg(dataURL);
+  };
+
+  const getDataURL = (c) => {
+    c != null && c.toDataURL(callback);
+  };
+
+  const saveToGallery = async () => {
+    setLoading(true);
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status === "granted") {
+      const fileUri = FileSystem.documentDirectory + devName + ".png";
+      const options = { encoding: FileSystem.EncodingType.Base64 };
+      await FileSystem.writeAsStringAsync(fileUri, qrSvg, options);
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      await MediaLibrary.createAlbumAsync("Zepcom-Inventory", asset, false)
+        .then((response) => {
+          setLoading(false);
+          alert(
+            "File saved successfully in documents folder name " + response.title
+          );
+          navigation.navigate("Dashboard");
+        })
+        .catch((error) => {
+          setLoading(false);
+          alert(error);
+        });
+    } else {
+      alert("Permission not granted");
+    }
+  };
+
   if (showQR) {
-    //console.warn(qrData);
     return (
       <View
         style={[
           styles.container,
-          { justifyContent: "center", alignItems: "center" },
+          {
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#fff",
+          },
         ]}
       >
         <QRCode
           value={[
-            { data: devName+"|", mode: 'byte' },
-            { data: machine+"|", mode: 'byte' },
-            { data: headPhone+"|", mode: 'byte' }
-        ]}
+            { data: devName + "|", mode: "byte" },
+            { data: machine + "|", mode: "byte" },
+            { data: headPhone + "|", mode: "byte" },
+            { data: extraScreen + "|", mode: "byte" },
+            { data: mouse + "|", mode: "byte" },
+            { data: keyboard, mode: "byte" },
+          ]}
           logo={logoFromFile}
           size={240}
           logoSize={20}
+          getRef={(c) => {
+            getDataURL(c);
+          }}
           logoBackgroundColor={"#fff"}
+        />
+        <ActivityIndicator
+          size="large"
+          color="#8E040A"
+          animating={isLoading}
+          style={{ margin: 10, marginTop: 25 }}
+        />
+        <Button
+          buttonStyle={{
+            margin: 10,
+            marginTop: 25,
+            backgroundColor: "#8E040A",
+            elevation: 3,
+          }}
+          title="SAVE TO GALLERY"
+          onPress={() => saveToGallery()}
         />
       </View>
     );
   } else {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: "#303131" }]}>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -154,7 +218,6 @@ const GenerateQR = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
 });
 
