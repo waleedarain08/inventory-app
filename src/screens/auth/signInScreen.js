@@ -1,17 +1,39 @@
 import React, { useEffect, useState, useContext } from "react";
 import { validateAll } from "indicative/validator";
-import { View, Text, Image, Keyboard } from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, Text, Image, Keyboard, Alert, BackHandler } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 import {
   Input,
   Card,
   FormValidationMessage,
-  Button,
+  Button
 } from "react-native-elements";
 
 import { AuthContext } from "../../utils/authContext";
 
 const SignInScreen = ({ navigation }) => {
+  
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to exit App?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   const [emailAddress, setemailAddress] = useState("adam@gmail.com");
   const [password, setPassword] = useState("abcdef");
   const [SignUpErrors, setSignUpErrors] = useState({});
@@ -54,8 +76,11 @@ const SignInScreen = ({ navigation }) => {
 
   return (
     <View style={{ backgroundColor: "#303131", flex: 1 }}>
-      <View style={{ flex: 1, justifyContent:"center" , alignItems:"center" }}>
-        <Image source={require('../../images/logo.png')} style={{ width: 100, height: 100 , resizeMode:"contain"}} />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Image
+          source={require("../../images/logo.png")}
+          style={{ width: 100, height: 100, resizeMode: "contain" }}
+        />
       </View>
       <View style={{ flex: 2 }}>
         <Card containerStyle={{ borderRadius: 8 }}>
@@ -64,12 +89,13 @@ const SignInScreen = ({ navigation }) => {
             placeholder="Enter Email"
             value={emailAddress}
             leftIcon={
-                <Icon
-                  name='envelope'
-                  size={14}
-                  color='#8E040A'
-                  style={{marginRight:"5%",marginLeft:-20}}
-                />}
+              <Icon
+                name="envelope"
+                size={14}
+                color="#8E040A"
+                style={{ marginRight: "5%", marginLeft: -20 }}
+              />
+            }
             onChangeText={setemailAddress}
             errorStyle={{ color: "red" }}
             errorMessage={SignUpErrors ? SignUpErrors.email : null}
@@ -80,12 +106,13 @@ const SignInScreen = ({ navigation }) => {
             placeholder="Enter Password"
             value={password}
             leftIcon={
-                <Icon
-                  name='lock'
-                  size={15}
-                  color='#8E040A'
-                  style={{marginRight:"5%",marginLeft:-20}}
-                />}
+              <Icon
+                name="lock"
+                size={15}
+                color="#8E040A"
+                style={{ marginRight: "5%", marginLeft: -20 }}
+              />
+            }
             onChangeText={setPassword}
             secureTextEntry
             errorStyle={{ color: "red" }}
@@ -96,12 +123,15 @@ const SignInScreen = ({ navigation }) => {
               margin: 10,
               marginTop: 25,
               backgroundColor: "#8E040A",
-              elevation:3
+              elevation: 3,
             }}
-            title="Sign in"
+            title="SIGN IN"
             onPress={() => handleSignIn()}
           />
-          <Text style={{ marginLeft: "17%",marginTop:5 }} onPress={() => signUp()}>
+          <Text
+            style={{ marginLeft: "17%", marginTop: 5 }}
+            onPress={() => signUp()}
+          >
             Don't have an account? Sign Up
           </Text>
         </Card>

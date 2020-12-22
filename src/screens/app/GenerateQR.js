@@ -12,6 +12,8 @@ import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
 import * as Permissions from "expo-permissions";
 import { Input, Card, Button } from "react-native-elements";
+import Spinner from 'react-native-loading-spinner-overlay';
+
 const GenerateQR = ({navigation}) => {
   let logoFromFile = require("../../images/logo.png");
   const [isLoading, setLoading] = useState(false);
@@ -66,6 +68,7 @@ const GenerateQR = ({navigation}) => {
     setLoading(true);
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     if (status === "granted") {
+
       const fileUri = FileSystem.documentDirectory + devName + ".png";
       const options = { encoding: FileSystem.EncodingType.Base64 };
       await FileSystem.writeAsStringAsync(fileUri, qrSvg, options);
@@ -82,6 +85,7 @@ const GenerateQR = ({navigation}) => {
           setLoading(false);
           alert(error);
         });
+
     } else {
       alert("Permission not granted");
     }
@@ -116,11 +120,12 @@ const GenerateQR = ({navigation}) => {
           }}
           logoBackgroundColor={"#fff"}
         />
-        <ActivityIndicator
-          size="large"
-          color="#8E040A"
-          animating={isLoading}
-          style={{ margin: 10, marginTop: 25 }}
+         <Spinner
+          visible={isLoading}
+          color={"#fff"}
+          overlayColor={"rgba(0, 0, 0, 0.5)"}
+          textContent={'Please Wait...'}
+          textStyle={styles.spinnerTextStyle}
         />
         <Button
           buttonStyle={{
@@ -219,6 +224,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  spinnerTextStyle:{
+    color:"#fff",
+    letterSpacing:3
+  }
 });
 
 export default GenerateQR;

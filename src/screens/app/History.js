@@ -8,17 +8,18 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { SearchBar } from "react-native-elements";
 
 const DATA = [
   {
     id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "Waleed J",
+    title: "Ahmed A",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
   },
   {
     id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Saeed A",
+    title: "Fahad K",
     created_at: "12 Dec 2020",
     request: "Request for change of Charger",
   },
@@ -36,7 +37,7 @@ const DATA = [
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d71",
-    title: "Waleed J",
+    title: "Waqas A",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
   },
@@ -54,13 +55,13 @@ const DATA = [
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d34",
-    title: "Saeed A",
+    title: "Ahmed A",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d40",
-    title: "Waleed J",
+    title: "Rizwan K",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
   },
@@ -71,22 +72,34 @@ export default History = () => {
     "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"
   );
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+  const [dataSource, setDataSource] = useState([]);
 
   useEffect(() => {
     setData(DATA);
   }, []);
 
+  SearchFilterFunction = (text) => {
+    const newData = data.filter(function (item) {
+      const itemData = item.title ? item.title.toUpperCase() : "".toUpperCase();
+      const textData = text.toUpperCase();
+      return itemData.indexOf(textData) > -1;
+    });
+
+    setDataSource(newData);
+    setSearch(text);
+  };
+
   const Item = ({ item, onPress, style }) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={[styles.title,{fontSize:12}]}>
-          {item.request}
-        </Text>
+        <Text style={[styles.title, { fontSize: 12 }]}>{item.request}</Text>
         <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text>
       </View>
     </TouchableOpacity>
   );
+  
   const renderItem = ({ item }) => {
     const backgroundColor = item.id === selectedId ? "#8E040A" : "#303131";
     return (
@@ -100,14 +113,32 @@ export default History = () => {
   if (data.length === 0) {
     return (
       <View style={styles.container}>
-        <Text style={{ color: "#fff",textAlign:"center",fontSize:16,marginTop:"5%",letterSpacing:5}}>Loading . . .</Text>
+        <Text
+          style={{
+            color: "#fff",
+            textAlign: "center",
+            fontSize: 16,
+            marginTop: "5%",
+            letterSpacing: 5,
+          }}
+        >
+          Loading . . .
+        </Text>
       </View>
     );
   }
   return (
     <View style={styles.container}>
+      <SearchBar
+        round
+        searchIcon={{ size: 24 }}
+        onChangeText={(text) => SearchFilterFunction(text)}
+        onClear={(text) => SearchFilterFunction("")}
+        placeholder="Type Employee Name Here..."
+        value={search}
+      />
       <FlatList
-        data={data}
+        data={dataSource && dataSource.length > 0 ? dataSource : data}
         key={(item) => item.id}
         renderItem={renderItem}
         extraData={selectedId}

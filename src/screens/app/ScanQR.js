@@ -29,7 +29,8 @@ const ScanQR = () => {
     return <Text>No access to camera</Text>;
   }
   if (scanned) {
-    return <WebView source={{ uri: url }} style={{ marginTop: 20 }} />;
+    // return <WebView source={{ uri: url }} style={{ marginTop: 20 }} />;
+    return <Text style={{ marginTop: 20 }} >{url}</Text>
   }
 
   return (

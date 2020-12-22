@@ -38,8 +38,8 @@ const Dashboard = ({ navigation }) => {
           activeOpacity={0.8}
           style={styles.column}
         >
-          <Icon3 name="file-chart" size={40} color="#fff" />
-          <Text style={styles.icontext}>View{"\n"}Reports</Text>
+          <Icon3 name="format-list-bulleted" size={40} color="#fff" />
+          <Text style={styles.icontext}>Employees{"\n"}List</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("Generate-qr-code")}

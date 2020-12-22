@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { validateAll } from "indicative/validator";
-import { View, Text } from "react-native";
+import { View, Text, BackHandler } from "react-native";
 import {
   Input,
   Card,
@@ -53,7 +53,12 @@ const SignUpScreen = ({ navigation }) => {
       });
   };
 
-  useEffect(() => {}, [SignUpErrors]);
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', function() {
+      signIn();
+      return true;
+    })
+  }, [SignUpErrors]);
 
   return (
     <View style={{ backgroundColor: "#303131", flex: 1 }}>
