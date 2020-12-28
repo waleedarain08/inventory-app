@@ -7,7 +7,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { SearchBar } from "react-native-elements";
 
 const DATA = [
@@ -16,67 +16,78 @@ const DATA = [
     title: "Ahmed A",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
+    status: "Pending",
   },
   {
     id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
     title: "Fahad K",
     created_at: "12 Dec 2020",
     request: "Request for change of Charger",
+    status: "Pending",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d72",
     title: "Waleed J",
     created_at: "08 Dec 2020",
     request: "Request for change of Internet device",
+    status: "Pending",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29dv3",
     title: "Saeed A",
     created_at: "08 Dec 2020",
     request: "Request for change of usb device",
+    status: "Approved",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d71",
     title: "Waqas A",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
+    status: "Approved",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d54",
     title: "Saeed A",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
+    status: "Approved",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d00",
     title: "Waleed J",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
+    status: "Pending",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d34",
     title: "Ahmed A",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
+    status: "Pending",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d40",
     title: "Rizwan K",
     created_at: "10 Dec 2020",
     request: "Request for change of Headphone",
+    status: "Pending",
   },
 ];
 
-export default History = () => {
+export default History = ({ navigaton, route }) => {
   const [selectedId, setSelectedId] = useState(
     "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"
   );
+  const [isEmployee, setEmployee] = useState([]);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [dataSource, setDataSource] = useState([]);
 
   useEffect(() => {
     setData(DATA);
+    setEmployee(route.params.isEmployee);
   }, []);
 
   SearchFilterFunction = (text) => {
@@ -93,13 +104,20 @@ export default History = () => {
   const Item = ({ item, onPress, style }) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View>
-        <Text style={styles.title}>{item.title}</Text>
+        {!isEmployee && <Text style={styles.title}>{item.title}</Text>}
         <Text style={[styles.title, { fontSize: 12 }]}>{item.request}</Text>
         <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text>
       </View>
+      {isEmployee ? (
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={[styles.title, { fontSize: 12 }]}>{item.status}</Text>
+        </View>
+      ) : (
+        <View></View>
+      )}
     </TouchableOpacity>
   );
-  
+
   const renderItem = ({ item }) => {
     const backgroundColor = item.id === selectedId ? "#8E040A" : "#303131";
     return (
@@ -129,14 +147,16 @@ export default History = () => {
   }
   return (
     <View style={styles.container}>
-      <SearchBar
-        round
-        searchIcon={{ size: 24 }}
-        onChangeText={(text) => SearchFilterFunction(text)}
-        onClear={(text) => SearchFilterFunction("")}
-        placeholder="Type Employee Name Here..."
-        value={search}
-      />
+      {!isEmployee && (
+        <SearchBar
+          round
+          searchIcon={{ size: 24 }}
+          onChangeText={(text) => SearchFilterFunction(text)}
+          onClear={(text) => SearchFilterFunction("")}
+          placeholder="Type Employee Name Here..."
+          value={search}
+        />
+      )}
       <FlatList
         data={dataSource && dataSource.length > 0 ? dataSource : data}
         key={(item) => item.id}

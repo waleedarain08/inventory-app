@@ -6,14 +6,15 @@ import {
   Input,
   Card,
   FormValidationMessage,
-  Button
+  Button,
 } from "react-native-elements";
 
 import { AuthContext } from "../../utils/authContext";
+import { Api } from "../../utils/Api";
 
 const SignInScreen = ({ navigation }) => {
-  
   useEffect(() => {
+    //Api.GET("todos/2").then((result) => console.log(result));
     const backAction = () => {
       Alert.alert("Hold on!", "Are you sure you want to exit App?", [
         {
@@ -41,7 +42,6 @@ const SignInScreen = ({ navigation }) => {
   const { signIn, signUp } = useContext(AuthContext);
 
   const handleSignIn = () => {
-    // https://indicative.adonisjs.com
     const rules = {
       email: "required|email",
       password: "required|string|min:6|max:40",

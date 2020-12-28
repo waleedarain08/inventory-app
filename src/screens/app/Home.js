@@ -10,49 +10,97 @@ import {
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Dashboard = ({ navigation }) => {
-  return (
-    <View style={styles.main}>
-      <View style={{ flex: 0.7 }}></View>
-      <View style={styles.row}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Scan-qr-code")}
-          activeOpacity={0.8}
-          style={styles.column}
-        >
-          <Icon3 name="qrcode-scan" size={40} color="#fff" />
-          <Text style={styles.icontext}>Scan{"\n"}QR Code</Text>
-        </TouchableOpacity>
+  const [isAdmin, setAdmin] = useState(false);
+  if (isAdmin) {
+    return (
+      <View style={styles.main}>
+        <View style={{ flex: 0.7 }}></View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Scan-qr-code")}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="qrcode-scan" size={40} color="#fff" />
+            <Text style={styles.icontext}>Scan{"\n"}QR Code</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity
+            onPress={() => navigation.navigate("History",{"isEmployee":0})}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="history" size={40} color="#fff" />
+            <Text style={styles.icontext}>Request{"\n"}Hisotry</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Reports")}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="format-list-bulleted" size={40} color="#fff" />
+            <Text style={styles.icontext}>Employees{"\n"}List</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Generate-qr-code")}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="qrcode" size={40} color="#fff" />
+            <Text style={styles.icontext}>Generate{"\n"}QR Code</Text>
+          </TouchableOpacity>
+        </View>
+        {/* <View style={{ flex: 0.7 }}></View> */}
         <TouchableOpacity
-          onPress={() => navigation.navigate("History")}
-          activeOpacity={0.8}
-          style={styles.column}
-        >
-          <Icon3 name="history" size={40} color="#fff" />
-          <Text style={styles.icontext}>Request{"\n"}Hisotry</Text>
-        </TouchableOpacity>
+          style={{ flex: 0.7 }}
+          onPress={() => setAdmin(!isAdmin)}
+        ></TouchableOpacity>
       </View>
-      <View style={styles.row}>
+    );
+  } else {
+    return (
+      <View style={styles.main}>
+        <View style={{ flex: 0.7 }}></View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Asset-Request")}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="open-in-new" size={50} color="#fff" />
+            <Text style={styles.icontext}>Create{"\n"}Asset Request</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Update Profile")}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="update" size={50} color="#fff" />
+            <Text style={styles.icontext}>Update{"\n"}Profile</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("History",{"isEmployee":1})}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="format-list-bulleted" size={50} color="#fff" />
+            <Text style={styles.icontext}>View{"\n"}Requets List</Text>
+          </TouchableOpacity>
+        </View>
+        {/* <View style={{ flex: 0.7 }}> */}
         <TouchableOpacity
-          onPress={() => navigation.navigate("Reports")}
-          activeOpacity={0.8}
-          style={styles.column}
-        >
-          <Icon3 name="format-list-bulleted" size={40} color="#fff" />
-          <Text style={styles.icontext}>Employees{"\n"}List</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Generate-qr-code")}
-          activeOpacity={0.8}
-          style={styles.column}
-        >
-          <Icon3 name="qrcode" size={40} color="#fff" />
-          <Text style={styles.icontext}>Generate{"\n"}QR Code</Text>
-        </TouchableOpacity>
+          style={{ flex: 0.7 }}
+          onPress={() => setAdmin(!isAdmin)}
+        ></TouchableOpacity>
+        {/* </View> */}
       </View>
-      <View style={{ flex: 0.7 }}></View>
-    </View>
-  );
+    );
+  }
 };
 
 const styles = StyleSheet.create({

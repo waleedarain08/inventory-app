@@ -24,6 +24,8 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { stateConditionString } from "./src/utils/helpers";
 import { AuthContext } from "./src/utils/authContext";
 import { reducer, initialState } from "./src/reducer";
+import { Api } from "./src/utils/Api";
+
 
 const Stack = createStackNavigator();
 
@@ -92,6 +94,22 @@ const createHomeStack = ({ navigation }) => {
         }}
         component={ReportDetail}
       />
+      <Stack.Screen
+        name="Create Request"
+        options={{
+          headerTintColor: "#fff",
+          headerStyle: { backgroundColor: "#303131" },
+        }}
+        component={Reports}
+      />
+      <Stack.Screen
+        name="Update Profile"
+        options={{
+          headerTintColor: "#fff",
+          headerStyle: { backgroundColor: "#303131" },
+        }}
+        component={Reports}
+      />
     </Stack.Navigator>
   );
 };
@@ -129,6 +147,7 @@ export default App = ({ navigation }) => {
           data.emailAddress !== undefined &&
           data.password !== undefined
         ) {
+         // Api.POST("todos",data).then((result) => console.log(result));
           dispatch({ type: "SIGN_IN", token: "Token-For-Now" });
         } else {
           dispatch({ type: "TO_SIGNIN_PAGE" });
