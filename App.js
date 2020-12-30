@@ -11,13 +11,17 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SignInScreen from "./src/screens/auth/signInScreen";
 import SignUpScreen from "./src/screens/auth/signUpScreen";
 import SplashScreen from "./src/screens/splashScreen";
-//App Screens
+//App Screens admin
 import Dashboard from "./src/screens/app/Home";
 import GenerateQR from "./src/screens/app/GenerateQR";
 import ScanQR from "./src/screens/app/ScanQR";
 import History from "./src/screens/app/History";
 import Reports from "./src/screens/app/Reports";
 import ReportDetail from "./src/screens/app/ReportDetail";
+//App Screens user
+import AssetRequest from "./src/screens/app/AssetRequest";
+import UpdateUser from "./src/screens/app/UpdateUser";
+import ViewQR from "./src/screens/app/ViewQR";
 
 
 import AsyncStorage from "@react-native-community/async-storage";
@@ -95,12 +99,12 @@ const createHomeStack = ({ navigation }) => {
         component={ReportDetail}
       />
       <Stack.Screen
-        name="Create Request"
+        name="Asset Request"
         options={{
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#303131" },
         }}
-        component={Reports}
+        component={AssetRequest}
       />
       <Stack.Screen
         name="Update Profile"
@@ -108,7 +112,15 @@ const createHomeStack = ({ navigation }) => {
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#303131" },
         }}
-        component={Reports}
+        component={UpdateUser}
+      />
+       <Stack.Screen
+        name="My QR"
+        options={{
+          headerTintColor: "#fff",
+          headerStyle: { backgroundColor: "#303131" },
+        }}
+        component={ViewQR}
       />
     </Stack.Navigator>
   );

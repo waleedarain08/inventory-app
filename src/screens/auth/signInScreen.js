@@ -35,7 +35,7 @@ const SignInScreen = ({ navigation }) => {
     return () => backHandler.remove();
   }, []);
 
-  const [emailAddress, setemailAddress] = useState("adam@gmail.com");
+  const [emailAddress, setemailAddress] = useState("admin@admin.com");
   const [password, setPassword] = useState("abcdef");
   const [SignUpErrors, setSignUpErrors] = useState({});
 
@@ -54,9 +54,8 @@ const SignInScreen = ({ navigation }) => {
 
     const messages = {
       required: (field) => `${field} is required`,
-      "username.alpha": "Username contains unallowed characters",
       "email.email": "Please enter a valid email address",
-      "password.min": "Wrong Password?",
+      "password.min": "Password should be atleast 6 characters long",
     };
 
     validateAll(data, rules, messages)

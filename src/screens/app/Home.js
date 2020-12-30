@@ -26,7 +26,7 @@ const Dashboard = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate("History",{"isEmployee":0})}
+            onPress={() => navigation.navigate("History", { isEmployee: 0 })}
             activeOpacity={0.8}
             style={styles.column}
           >
@@ -65,31 +65,38 @@ const Dashboard = ({ navigation }) => {
         <View style={{ flex: 0.7 }}></View>
         <View style={styles.row}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Asset-Request")}
+            onPress={() => navigation.navigate("Asset Request")}
             activeOpacity={0.8}
             style={styles.column}
           >
-            <Icon3 name="open-in-new" size={50} color="#fff" />
+            <Icon3 name="open-in-new" size={40} color="#fff" />
             <Text style={styles.icontext}>Create{"\n"}Asset Request</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             onPress={() => navigation.navigate("Update Profile")}
             activeOpacity={0.8}
             style={styles.column}
           >
-            <Icon3 name="update" size={50} color="#fff" />
+            <Icon3 name="update" size={40} color="#fff" />
             <Text style={styles.icontext}>Update{"\n"}Profile</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("History",{"isEmployee":1})}
+            onPress={() => navigation.navigate("History", { isEmployee: 1 })}
             activeOpacity={0.8}
             style={styles.column}
           >
-            <Icon3 name="format-list-bulleted" size={50} color="#fff" />
+            <Icon3 name="format-list-bulleted" size={40} color="#fff" />
             <Text style={styles.icontext}>View{"\n"}Requets List</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("My QR")}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="qrcode" size={40} color="#fff" />
+            <Text style={styles.icontext}>View{"\n"}My Qr Code</Text>
           </TouchableOpacity>
         </View>
         {/* <View style={{ flex: 0.7 }}> */}

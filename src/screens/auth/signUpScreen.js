@@ -32,7 +32,6 @@ const SignUpScreen = ({ navigation }) => {
 
     const messages = {
       required: (field) => `${field} is required`,
-      "username.alpha": "Username contains unallowed characters",
       "email.email": "Please enter a valid email address",
       "password.min":
         "Password is too short. Must be greater than 6 characters",
@@ -41,8 +40,9 @@ const SignUpScreen = ({ navigation }) => {
 
     validateAll(data, rules, messages)
       .then(() => {
-        console.log("success sign in");
-        signUp({ emailAddress, password });
+        alert("Account created successfully,you can ow signin");
+        signIn();
+        //signUp({ emailAddress, password });
       })
       .catch((err) => {
         const formatError = {};
@@ -54,17 +54,23 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', function() {
-      signIn();
-      return true;
-    })
+    const backHandle = BackHandler.addEventListener(
+      "hardwareBackPress",
+       ()=>{
+        signIn();
+        return true;
+      }
+    );
+    return () => {
+      backHandle.remove();
+    };
   }, [SignUpErrors]);
 
   return (
     <View style={{ backgroundColor: "#303131", flex: 1 }}>
       {/* <View style={{ flex: 1}}></View> */}
-      <View style={{ flex: 1,marginBottom:"5%",justifyContent:"center" }}>
-      <Card containerStyle={{ borderRadius: 8 }}>
+      <View style={{ flex: 1, marginBottom: "5%", justifyContent: "center" }}>
+        <Card containerStyle={{ borderRadius: 8 }}>
           <Input
             label={"Email"}
             placeholder="Enter Email address"
