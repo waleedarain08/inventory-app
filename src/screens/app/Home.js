@@ -8,9 +8,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
+import AsyncStorage from "@react-native-community/async-storage";
 
 const Dashboard = ({ navigation }) => {
-  const [isAdmin, setAdmin] = useState(false);
+  const [isAdmin, setAdmin] = useState(true);
+  
+
   if (isAdmin) {
     return (
       <View style={styles.main}>
@@ -31,12 +34,12 @@ const Dashboard = ({ navigation }) => {
             style={styles.column}
           >
             <Icon3 name="history" size={40} color="#fff" />
-            <Text style={styles.icontext}>Request{"\n"}Hisotry</Text>
+            <Text style={styles.icontext}>All Requests{"\n"}Hisotry</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Reports")}
+            onPress={() => navigation.navigate("Employees List")}
             activeOpacity={0.8}
             style={styles.column}
           >
@@ -54,9 +57,13 @@ const Dashboard = ({ navigation }) => {
         </View>
         {/* <View style={{ flex: 0.7 }}></View> */}
         <TouchableOpacity
-          style={{ flex: 0.7 }}
+          style={{ flex: 0.7,justifyContent:"center",alignItems:"center" }}
           onPress={() => setAdmin(!isAdmin)}
-        ></TouchableOpacity>
+        >
+          <Text style={{color:"#fff"}}>
+            Tap to see {!isAdmin ? "Admin" : "Employee"} view for a time being.
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   } else {
@@ -88,7 +95,7 @@ const Dashboard = ({ navigation }) => {
             style={styles.column}
           >
             <Icon3 name="format-list-bulleted" size={40} color="#fff" />
-            <Text style={styles.icontext}>View{"\n"}Requets List</Text>
+            <Text style={styles.icontext}>View My{"\n"}Requests Status</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("My QR")}
@@ -101,9 +108,13 @@ const Dashboard = ({ navigation }) => {
         </View>
         {/* <View style={{ flex: 0.7 }}> */}
         <TouchableOpacity
-          style={{ flex: 0.7 }}
+          style={{ flex: 0.7,justifyContent:"center",alignItems:"center" }}
           onPress={() => setAdmin(!isAdmin)}
-        ></TouchableOpacity>
+        >
+          <Text style={{color:"#fff"}}>
+            Tap to see {!isAdmin ? "Admin" : "Employee"} view for a time being.
+          </Text>
+        </TouchableOpacity>
         {/* </View> */}
       </View>
     );

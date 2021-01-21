@@ -1,6 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
 import { validateAll } from "indicative/validator";
-import { View, Text, Image, Keyboard, Alert, BackHandler } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Keyboard,
+  Alert,
+  BackHandler,
+  StyleSheet,
+} from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {
   Input,
@@ -11,6 +19,7 @@ import {
 
 import { AuthContext } from "../../utils/authContext";
 import { Api } from "../../utils/Api";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const SignInScreen = ({ navigation }) => {
   useEffect(() => {
@@ -37,7 +46,9 @@ const SignInScreen = ({ navigation }) => {
 
   const [emailAddress, setemailAddress] = useState("admin@admin.com");
   const [password, setPassword] = useState("abcdef");
+  const [token, setToken] = useState("Token-For-Now");
   const [SignUpErrors, setSignUpErrors] = useState({});
+  const [isLoading, setLoading] = useState(false);
 
   const { signIn, signUp } = useContext(AuthContext);
 
@@ -60,9 +71,18 @@ const SignInScreen = ({ navigation }) => {
 
     validateAll(data, rules, messages)
       .then(() => {
-        console.log("successfull");
         Keyboard.dismiss();
-        signIn({ emailAddress, password });
+        setLoading(true);
+        //console.log(data);
+        Api.POST("todos", data).then((response) => {
+          console.log(response)
+          setLoading(false);
+          if (response == "Error") {
+            alert("Something went wrong!");
+          } else {
+            signIn({ emailAddress, password, token });
+          }
+        });
       })
       .catch((err) => {
         const formatError = {};
@@ -74,11 +94,18 @@ const SignInScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={{ backgroundColor: "#303131", flex: 1 }}>
+    <View style={{ backgroundColor: "#30313120", flex: 1 }}>
+      <Spinner
+        visible={isLoading}
+        color={"#fff"}
+        overlayColor={"rgba(0, 0, 0, 0.5)"}
+        textContent={"Please Wait..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
-          source={require("../../images/logo.png")}
-          style={{ width: 100, height: 100, resizeMode: "contain" }}
+          source={require("../../images/zepcom.png")}
+          style={{ width: 140, height: 140, resizeMode: "contain" }}
         />
       </View>
       <View style={{ flex: 2 }}>
@@ -139,5 +166,15 @@ const SignInScreen = ({ navigation }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  spinnerTextStyle: {
+    color: "#fff",
+    letterSpacing: 3,
+  },
+});
 
 export default SignInScreen;

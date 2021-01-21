@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { validateAll } from "indicative/validator";
-import { View, Text, BackHandler } from "react-native";
+import {
+  View,
+  Text,
+  BackHandler,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import {
   Input,
   Card,
@@ -9,12 +16,21 @@ import {
 } from "react-native-elements";
 
 import { AuthContext } from "../../utils/authContext";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Api } from "../../utils/Api";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const SignUpScreen = ({ navigation }) => {
   const [emailAddress, setemailAddress] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [password_confirmation, setpassword_confirmation] = useState("");
+  const [cnic, setCnic] = useState("");
+  const [joiningDate, setJoiningDate] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [SignUpErrors, setSignUpErrors] = useState({});
+  const [isLoading, setLoading] = useState(false);
 
   const { signUp, signIn } = useContext(AuthContext); // should be signUp
 
@@ -22,12 +38,24 @@ const SignUpScreen = ({ navigation }) => {
     const rules = {
       email: "required|email",
       password: "required|string|min:6|max:40|confirmed",
+      cnic: "required|min:13|max:13",
+      joiningDate: "required|string",
+      mobileNo: "required|min:11|max:11",
     };
 
     const data = {
       email: emailAddress,
       password: password,
-      password_confirmation: passwordConfirm,
+      password_confirmation: password_confirmation,
+      cnic: cnic,
+      mobileNo: mobileNo,
+      joiningDate: joiningDate,
+      designation: designation,
+    };
+
+    const data2 = {
+      email: emailAddress,
+      password: password,
     };
 
     const messages = {
@@ -35,13 +63,24 @@ const SignUpScreen = ({ navigation }) => {
       "email.email": "Please enter a valid email address",
       "password.min":
         "Password is too short. Must be greater than 6 characters",
-      "password.confirmed": "Passwords do not match",
+      "password.confirmed": "Passsword and confrim password do not match",
+      "cnic.min": "CNIC should contain 13 digits without -",
+      "cnic.max": "CNIC should contain 13 digits without -",
+      "mobileNo.min": "Mobile No should contain 11 digits only",
+      "mobileNo.max": "Mobile No should contain 11 digits only",
     };
 
     validateAll(data, rules, messages)
       .then(() => {
-        alert("Account created successfully,you can ow signin");
-        signIn();
+        setLoading(true);
+        console.log(data);
+        Api.POST("todofs", data).then((result) => {
+          console.log(result);
+          setLoading(false);
+          signIn();
+          alert("Account created successfully,you can now signin");
+        });
+        // signIn();
         //signUp({ emailAddress, password });
       })
       .catch((err) => {
@@ -53,23 +92,43 @@ const SignUpScreen = ({ navigation }) => {
       });
   };
 
+  const handleConfirm = (date) => {
+    setJoiningDate(date.toISOString().substr(0, 10));
+    hideDatePicker();
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
   useEffect(() => {
-    const backHandle = BackHandler.addEventListener(
-      "hardwareBackPress",
-       ()=>{
-        signIn();
-        return true;
-      }
-    );
+    const backHandle = BackHandler.addEventListener("hardwareBackPress", () => {
+      signIn();
+      return true;
+    });
     return () => {
       backHandle.remove();
     };
   }, [SignUpErrors]);
 
   return (
-    <View style={{ backgroundColor: "#303131", flex: 1 }}>
+    <View style={{ backgroundColor: "#30313160", flex: 1 }}>
+      <Spinner
+        visible={isLoading}
+        color={"#fff"}
+        overlayColor={"rgba(0, 0, 0, 0.5)"}
+        textContent={"Please Wait..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       {/* <View style={{ flex: 1}}></View> */}
-      <View style={{ flex: 1, marginBottom: "5%", justifyContent: "center" }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: "5%",
+          justifyContent: "center",
+        }}
+      >
         <Card containerStyle={{ borderRadius: 8 }}>
           <Input
             label={"Email"}
@@ -86,18 +145,74 @@ const SignUpScreen = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            errorMessage={SignUpErrors ? SignUpErrors.password : null}
           />
           <Input
             containerStyle={{ marginTop: 10 }}
             label={"Password Confirm"}
             placeholder="Enter password again"
-            value={passwordConfirm}
-            onChangeText={setPasswordConfirm}
+            name="password_confirmation"
+            value={password_confirmation}
+            onChangeText={setpassword_confirmation}
             secureTextEntry
+            errorMessage={
+              SignUpErrors ? SignUpErrors.password_confirmation : null
+            }
           />
-          <Text style={{ color: "red", marginLeft: 10, fontSize: 10 }}>
-            {SignUpErrors ? SignUpErrors.password : null}
-          </Text>
+          <Input
+            label={"Mobile"}
+            placeholder="03335001234"
+            value={mobileNo}
+            keyboardType={"number-pad"}
+            containerStyle={{ marginTop: 10 }}
+            onChangeText={setMobileNo}
+            errorStyle={{ color: "red" }}
+            errorMessage={SignUpErrors ? SignUpErrors.mobileNo : null}
+          />
+          <Input
+            label={"CNIC"}
+            placeholder="4220161850673"
+            value={cnic}
+            keyboardType={"number-pad"}
+            containerStyle={{ marginTop: 10 }}
+            onChangeText={setCnic}
+            errorStyle={{ color: "red" }}
+            errorMessage={SignUpErrors ? SignUpErrors.cnic : null}
+          />
+          <TouchableOpacity
+            onPress={() => setDatePickerVisibility(!isDatePickerVisible)}
+          >
+            <Input
+              label={"Joining Date"}
+              placeholder="01-05-2018"
+              value={joiningDate}
+              pointerEvents="none"
+              editable={false}
+              containerStyle={{ marginTop: 10 }}
+              errorStyle={{ color: "red" }}
+              errorMessage={
+                SignUpErrors
+                  ? SignUpErrors.joiningDate && "joining date is required"
+                  : null
+              }
+            />
+          </TouchableOpacity>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            maximumDate={new Date()}
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
+          <Input
+            label={"Designation"}
+            placeholder="Enter Designation"
+            value={designation}
+            containerStyle={{ marginTop: 10 }}
+            onChangeText={setDesignation}
+            errorStyle={{ color: "red" }}
+            errorMessage={SignUpErrors ? SignUpErrors.designation : null}
+          />
 
           <Button
             buttonStyle={{
@@ -109,14 +224,24 @@ const SignUpScreen = ({ navigation }) => {
             title="SIGN UP"
             onPress={() => handleSignUp()}
           />
-          <Text style={{ marginLeft: 80 }} onPress={() => signIn()}>
+          <Text style={{ marginLeft: "22%" }} onPress={() => signIn()}>
             Already Signed Up? Sign In
           </Text>
         </Card>
-      </View>
+      </ScrollView>
       {/* <View style={{ flex: 1 }}></View> */}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  spinnerTextStyle: {
+    color: "#fff",
+    letterSpacing: 3,
+  },
+});
 
 export default SignUpScreen;

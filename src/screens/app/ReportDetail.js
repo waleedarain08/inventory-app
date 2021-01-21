@@ -7,18 +7,22 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Input, Card, Button } from "react-native-elements";
+import { Input, Card, Button, CheckBox } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { validateAll } from "indicative/validator";
 
 const ReportDetail = ({ route, navigation }) => {
-  const [editForm, setEditForm] = useState(false);
+  const [editForm, setEditForm] = useState(true);
   const [devName, setDevName] = useState(route.params.item.title);
+  const [subject, setSubject] = useState("Request for headphone change.");
   const [machine, setMachine] = useState("Dell");
+  const [lcd, setLcd] = useState("Sony");
   const [headPhone, setheadPhone] = useState("A4Tech");
   const [extraScreen, setextraScreen] = useState("Sony");
   const [mouse, setMouse] = useState("A4Tech");
   const [keyboard, setKeyboard] = useState("Hp");
+  const [accept, setAccept] = useState(true);
+  const [decline, setDecline] = useState(false);
   const [FormErrors, setFormErrors] = useState({});
 
   useEffect(() => {
@@ -31,7 +35,7 @@ const ReportDetail = ({ route, navigation }) => {
     };
 
     const data = {
-      devName: devName, 
+      devName: devName,
     };
 
     const messages = {
@@ -52,14 +56,26 @@ const ReportDetail = ({ route, navigation }) => {
       });
   };
 
+  const toggleRequest = (val) => {
+    if(val){
+      setAccept(true);
+      setDecline(false);
+    }else{
+      setAccept(false);
+      setDecline(true);
+    }
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {!editForm && (
+      {/* {!editForm && (
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => {
             setEditForm(true);
-            alert("Edit assets info and press Update button to save information.")
+            alert(
+              "Edit assets info and press Update button to save information."
+            );
           }}
           style={{
             position: "absolute",
@@ -71,7 +87,7 @@ const ReportDetail = ({ route, navigation }) => {
           <Icon name="edit" size={20} color="#fff" />
           <Text style={{ color: "#fff" }}> Edit Info</Text>
         </TouchableOpacity>
-      )}
+      )} */}
       <View
         style={{ flex: 0.5, justifyContent: "center", alignItems: "center" }}
       >
@@ -88,14 +104,24 @@ const ReportDetail = ({ route, navigation }) => {
       <View style={{ flex: 1, marginBottom: "5%", justifyContent: "center" }}>
         <Card containerStyle={{ borderRadius: 8 }}>
           <Input
+            label={"Last Request Subject"}
+            placeholder="Enter Subject"
+            value={subject}
+            onChangeText={setSubject}
+            editable={false}
+            errorStyle={{ color: "red" }}
+            errorMessage={FormErrors ? FormErrors.subject : null}
+          />
+          {/* <Input
             label={"Dev Name"}
             placeholder="Enter Dev Name"
             value={devName}
+            containerStyle={{marginTop:10}}
             onChangeText={setDevName}
             editable={editForm}
             errorStyle={{ color: "red" }}
             errorMessage={FormErrors ? FormErrors.devName : null}
-          />
+          /> */}
           <Input
             label={"Machine"}
             placeholder="Enter Machine"
@@ -105,6 +131,16 @@ const ReportDetail = ({ route, navigation }) => {
             editable={editForm}
             errorStyle={{ color: "red" }}
             errorMessage={FormErrors ? FormErrors.machine : null}
+          />
+          <Input
+            label={"Lcd"}
+            placeholder="Enter Lcd"
+            value={lcd}
+            containerStyle={{ marginTop: 10 }}
+            onChangeText={setLcd}
+            editable={editForm}
+            errorStyle={{ color: "red" }}
+            errorMessage={FormErrors ? FormErrors.lcd : null}
           />
           <Input
             label={"Headphone"}
@@ -145,6 +181,20 @@ const ReportDetail = ({ route, navigation }) => {
             onChangeText={setKeyboard}
             errorStyle={{ color: "red" }}
             errorMessage={FormErrors ? FormErrors.keyboard : null}
+          />
+           <CheckBox
+            title="Accept Request"
+            checked={accept}
+            checkedColor={"#8E040A"}
+            containerStyle={{marginTop:10}}
+            onPress={() => toggleRequest(1)}
+          />
+           <CheckBox
+            title="Decline Request"
+            checked={decline}
+            checkedColor={"#8E040A"}
+            containerStyle={{marginTop:10}}
+            onPress={() => toggleRequest(0)}
           />
           <Button
             buttonStyle={{

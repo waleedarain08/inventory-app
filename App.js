@@ -23,18 +23,24 @@ import AssetRequest from "./src/screens/app/AssetRequest";
 import UpdateUser from "./src/screens/app/UpdateUser";
 import ViewQR from "./src/screens/app/ViewQR";
 
-
 import AsyncStorage from "@react-native-community/async-storage";
 import { stateConditionString } from "./src/utils/helpers";
 import { AuthContext } from "./src/utils/authContext";
 import { reducer, initialState } from "./src/reducer";
 import { Api } from "./src/utils/Api";
 
-
 const Stack = createStackNavigator();
 
 const createHomeStack = ({ navigation }) => {
   const { signOut } = useContext(AuthContext);
+  const removeToken = async() => {
+    try {
+       await AsyncStorage.removeItem("userToken");
+    } catch (e) {
+      // removing token failed
+    }
+    signOut();
+  };
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -43,7 +49,7 @@ const createHomeStack = ({ navigation }) => {
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#303131" },
           headerRight: () => (
-            <TouchableOpacity activeOpacity={0.7} onPress={() => signOut()}>
+            <TouchableOpacity activeOpacity={0.7} onPress={() => removeToken()}>
               <Icon
                 name="logout-variant"
                 style={{ marginRight: 15 }}
@@ -82,7 +88,7 @@ const createHomeStack = ({ navigation }) => {
         component={History}
       />
       <Stack.Screen
-        name="Reports"
+        name="Employees List"
         options={{
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#303131" },
@@ -92,7 +98,7 @@ const createHomeStack = ({ navigation }) => {
       <Stack.Screen
         name="ReportDetail"
         options={{
-          title:"",
+          title: "",
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#303131" },
         }}
@@ -114,7 +120,7 @@ const createHomeStack = ({ navigation }) => {
         }}
         component={UpdateUser}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="My QR"
         options={{
           headerTintColor: "#fff",
@@ -139,14 +145,26 @@ export default App = ({ navigation }) => {
       } catch (e) {
         // Restoring token failed
       }
-
       // After restoring token, we may need to validate it in production apps
       // This will switch to the App screen or Auth screen and this loading
       // screen will be unmounted and thrown away.
-      dispatch({ type: "RESTORE_TOKEN", token: userToken });
+      if(userToken !== null){
+      dispatch({ type: "SIGN_IN", token: userToken });
+      }
     };
     bootstrapAsync();
   }, []);
+
+  const saveToken = async (token) => {
+    let userToken = token;
+
+    try {
+       await AsyncStorage.setItem("userToken",userToken);
+    } catch (e) {
+     // alert(e);
+      // saving token failed
+    }
+  };
 
   // In a production app, we need to send some data (usually username, password) to server and get a token
   // We will also need to handle errors if sign in failed
@@ -159,8 +177,9 @@ export default App = ({ navigation }) => {
           data.emailAddress !== undefined &&
           data.password !== undefined
         ) {
-         // Api.POST("todos",data).then((result) => console.log(result));
-          dispatch({ type: "SIGN_IN", token: "Token-For-Now" });
+          console.log(data.token);
+          saveToken(data.token);
+          dispatch({ type: "SIGN_IN", token:data.token  });
         } else {
           dispatch({ type: "TO_SIGNIN_PAGE" });
         }
@@ -206,9 +225,7 @@ export default App = ({ navigation }) => {
               headerLeft: () => (
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  onPress={() =>
-                    dispatch({ type: "TO_SIGNIN_PAGE" })
-                  }
+                  onPress={() => dispatch({ type: "TO_SIGNIN_PAGE" })}
                 >
                   <Icon
                     name="keyboard-backspace"

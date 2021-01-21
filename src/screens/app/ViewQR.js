@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import Spinner from "react-native-loading-spinner-overlay";
 
-const ViewQR = ({ navigation }) => {
+const ViewQR = () => {
   let logoFromFile = require("../../images/logo.png");
   const [devName, setDevName] = useState("Waleed J");
   const [isLoading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ const ViewQR = ({ navigation }) => {
       setLoading(false);
     }, 600);
   }, []);
-
+  
   return (
     <View
       style={[

@@ -23,14 +23,14 @@ const DATA = [
     title: "Fahad K",
     created_at: "12 Dec 2020",
     request: "Request for change of Charger",
-    status: "Pending",
+    status: "Rejected",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29d72",
     title: "Waleed J",
     created_at: "08 Dec 2020",
     request: "Request for change of Internet device",
-    status: "Pending",
+    status: "Rejected",
   },
   {
     id: "58694a0f-3da1-471f-bd96-145571e29dv3",
@@ -108,13 +108,9 @@ export default History = ({ navigaton, route }) => {
         <Text style={[styles.title, { fontSize: 12 }]}>{item.request}</Text>
         <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text>
       </View>
-      {isEmployee ? (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={[styles.title, { fontSize: 12 }]}>{item.status}</Text>
-        </View>
-      ) : (
-        <View></View>
-      )}
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Text style={[styles.title, { fontSize: 12 }]}>{item.status}</Text>
+      </View>
     </TouchableOpacity>
   );
 
