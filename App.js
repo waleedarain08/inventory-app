@@ -26,16 +26,16 @@ import ViewQR from "./src/screens/app/ViewQR";
 import AsyncStorage from "@react-native-community/async-storage";
 import { stateConditionString } from "./src/utils/helpers";
 import { AuthContext } from "./src/utils/authContext";
+import { MyContext } from "./src/utils/myContext";
 import { reducer, initialState } from "./src/reducer";
-import { Api } from "./src/utils/Api";
 
 const Stack = createStackNavigator();
 
 const createHomeStack = ({ navigation }) => {
   const { signOut } = useContext(AuthContext);
-  const removeToken = async() => {
+  const removeToken = async () => {
     try {
-       await AsyncStorage.removeItem("userToken");
+      await AsyncStorage.removeItem("userToken");
     } catch (e) {
       // removing token failed
     }
@@ -133,8 +133,9 @@ const createHomeStack = ({ navigation }) => {
 };
 
 export default App = ({ navigation }) => {
-  const { signIn } = useContext(AuthContext); // should be signUp
+  // const { signIn } = useContext(AuthContext); // should be signUp
   const [state, dispatch] = useReducer(reducer, initialState);
+  //console.log(state);
   useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
@@ -145,11 +146,8 @@ export default App = ({ navigation }) => {
       } catch (e) {
         // Restoring token failed
       }
-      // After restoring token, we may need to validate it in production apps
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
-      if(userToken !== null){
-      dispatch({ type: "SIGN_IN", token: userToken });
+      if (userToken !== null) {
+        dispatch({ type: "SIGN_IN", token: userToken });
       }
     };
     bootstrapAsync();
@@ -159,9 +157,9 @@ export default App = ({ navigation }) => {
     let userToken = token;
 
     try {
-       await AsyncStorage.setItem("userToken",userToken);
+      await AsyncStorage.setItem("userToken", userToken);
     } catch (e) {
-     // alert(e);
+      // alert(e);
       // saving token failed
     }
   };
@@ -177,9 +175,8 @@ export default App = ({ navigation }) => {
           data.emailAddress !== undefined &&
           data.password !== undefined
         ) {
-          console.log(data.token);
           saveToken(data.token);
-          dispatch({ type: "SIGN_IN", token:data.token  });
+          dispatch({ type: "SIGN_IN", token: data.token });
         } else {
           dispatch({ type: "TO_SIGNIN_PAGE" });
         }
@@ -187,7 +184,6 @@ export default App = ({ navigation }) => {
       signOut: async (data) => {
         dispatch({ type: "SIGN_OUT" });
       },
-
       signUp: async (data) => {
         if (
           data &&
@@ -273,9 +269,11 @@ export default App = ({ navigation }) => {
 
   return (
     <AuthContext.Provider value={authContextValue}>
-      <NavigationContainer>
-        <Stack.Navigator>{chooseScreen(state)}</Stack.Navigator>
-      </NavigationContainer>
+      <MyContext.Provider value={[state,dispatch]}>
+        <NavigationContainer>
+          <Stack.Navigator>{chooseScreen(state)}</Stack.Navigator>
+        </NavigationContainer>
+      </MyContext.Provider>
     </AuthContext.Provider>
   );
 };

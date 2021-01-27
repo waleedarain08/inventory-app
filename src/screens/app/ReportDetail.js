@@ -10,6 +10,8 @@ import {
 import { Input, Card, Button, CheckBox } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { validateAll } from "indicative/validator";
+import { Api } from "../../utils/Api";
+
 
 const ReportDetail = ({ route, navigation }) => {
   const [editForm, setEditForm] = useState(true);

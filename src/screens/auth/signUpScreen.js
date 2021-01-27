@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Alert,
 } from "react-native";
 import {
   Input,
@@ -21,6 +22,7 @@ import { Api } from "../../utils/Api";
 import Spinner from "react-native-loading-spinner-overlay";
 
 const SignUpScreen = ({ navigation }) => {
+  const [username, setUsername] = useState("");
   const [emailAddress, setemailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [password_confirmation, setpassword_confirmation] = useState("");
@@ -32,15 +34,28 @@ const SignUpScreen = ({ navigation }) => {
   const [SignUpErrors, setSignUpErrors] = useState({});
   const [isLoading, setLoading] = useState(false);
 
-  const { signUp, signIn } = useContext(AuthContext); // should be signUp
+  const { signUp, signIn } = useContext(AuthContext);
+
+  const makeid = (length) => {
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  };
 
   const handleSignUp = () => {
     const rules = {
+      username: "required|string|max:20",
       email: "required|email",
       password: "required|string|min:6|max:40|confirmed",
       cnic: "required|min:13|max:13",
-      joiningDate: "required|string",
-      mobileNo: "required|min:11|max:11",
+      joining_date: "required|string",
+      mobile_no: "required|min:11|max:11",
+      designation: "required|string|min:6|max:40",
     };
 
     const data = {
@@ -48,14 +63,11 @@ const SignUpScreen = ({ navigation }) => {
       password: password,
       password_confirmation: password_confirmation,
       cnic: cnic,
-      mobileNo: mobileNo,
-      joiningDate: joiningDate,
+      mobile_no: mobileNo,
+      joining_date: joiningDate,
       designation: designation,
-    };
-
-    const data2 = {
-      email: emailAddress,
-      password: password,
+      username: username,
+      designation: designation,
     };
 
     const messages = {
@@ -72,13 +84,20 @@ const SignUpScreen = ({ navigation }) => {
 
     validateAll(data, rules, messages)
       .then(() => {
+        setSignUpErrors({});
         setLoading(true);
-        console.log(data);
-        Api.POST("todofs", data).then((result) => {
-          console.log(result);
+        Api.POST("auth/register", data).then((response) => {
+          console.log(response);
           setLoading(false);
-          signIn();
-          alert("Account created successfully,you can now signin");
+          if (response.statusCode >= 400) {
+            Alert.alert("Sorry!", response.errorMessage);
+          } else {
+            signIn();
+            Alert.alert(
+              "Congratulations",
+              "Account created successfully,you can now signin"
+            );
+          }
         });
         // signIn();
         //signUp({ emailAddress, password });
@@ -131,6 +150,15 @@ const SignUpScreen = ({ navigation }) => {
       >
         <Card containerStyle={{ borderRadius: 8 }}>
           <Input
+            label={"Enter Name"}
+            placeholder="Enter Your Name"
+            value={username}
+            onChangeText={setUsername}
+            errorStyle={{ color: "red" }}
+            errorMessage={SignUpErrors ? SignUpErrors.username : null}
+          />
+          <Input
+            containerStyle={{ marginTop: 10 }}
             label={"Email"}
             placeholder="Enter Email address"
             value={emailAddress}

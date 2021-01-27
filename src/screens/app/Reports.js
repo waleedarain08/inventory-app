@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import {SearchBar} from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { Api } from "../../utils/Api";
+import Spinner from "react-native-loading-spinner-overlay";
+
 
 const DATA = [
   {
@@ -65,10 +68,17 @@ export default Reports = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [search,setSearch] = useState('');
   const [dataSource,setDataSource] = useState([]);
-
+  
 
   useEffect(() => {
-    setData(DATA);
+    Api.GET("todos").then((response) => {
+     // console.log(response)
+      if (response == "Error") {
+        alert("Something went wrong!");
+      } else {
+        setData(DATA);
+      }
+    });
   }, []);
 
   SearchFilterFunction = (text) => {

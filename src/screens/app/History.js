@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer, useContext } from "react";
 import {
   SafeAreaView,
   View,
@@ -6,9 +6,15 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Alert
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+//import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { SearchBar } from "react-native-elements";
+import { Api } from "../../utils/Api";
+import Spinner from "react-native-loading-spinner-overlay";
+//import { reducer, initialState } from "../../reducer.js";
+//import { AuthContext } from "../../utils/authContext";
+import { MyContext } from "../../utils/myContext";
 
 const DATA = [
   {
@@ -77,6 +83,7 @@ const DATA = [
 ];
 
 export default History = ({ navigaton, route }) => {
+  const [state, dispatch] = useContext(MyContext);
   const [selectedId, setSelectedId] = useState(
     "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"
   );
@@ -84,10 +91,21 @@ export default History = ({ navigaton, route }) => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [dataSource, setDataSource] = useState([]);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    setData(DATA);
-    setEmployee(route.params.isEmployee);
+    console.log(state.userToken);
+    setLoading(true);
+    Api.GET("requests", state.userToken).then((response) => {
+      console.log(response);
+      setLoading(false);
+      if (response.statusCode >= 400) {
+        Alert.alert("Sorry!", response.errorMessage);
+      } else {
+        setData(response);
+        setEmployee(route.params.isEmployee);
+      }
+    });
   }, []);
 
   SearchFilterFunction = (text) => {
@@ -104,12 +122,13 @@ export default History = ({ navigaton, route }) => {
   const Item = ({ item, onPress, style }) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View>
-        {!isEmployee && <Text style={styles.title}>{item.title}</Text>}
-        <Text style={[styles.title, { fontSize: 12 }]}>{item.request}</Text>
-        <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text>
+        {!isEmployee && <Text style={styles.title}>{item.__user__.username}</Text>}
+        <Text style={[styles.title, { fontSize: 12 }]}>{item.item}</Text>
+        <Text style={[styles.title, { fontSize: 12 }]}>{item.detail}</Text>
+        {/* <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text> */}
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text style={[styles.title, { fontSize: 12 }]}>{item.status}</Text>
+        <Text style={[styles.title, { fontSize: 12 }]}>{item.is_resolved}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -126,19 +145,26 @@ export default History = ({ navigaton, route }) => {
   };
   if (data.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text
-          style={{
-            color: "#fff",
-            textAlign: "center",
-            fontSize: 16,
-            marginTop: "5%",
-            letterSpacing: 5,
-          }}
-        >
-          Loading . . .
-        </Text>
-      </View>
+      // <View style={styles.container}>
+      //   <Text
+      //     style={{
+      //       color: "#fff",
+      //       textAlign: "center",
+      //       fontSize: 16,
+      //       marginTop: "5%",
+      //       letterSpacing: 5,
+      //     }}
+      //   >
+      //     Loading . . .
+      //   </Text>
+      // </View>
+      <Spinner
+        visible={isLoading}
+        color={"#fff"}
+        overlayColor={"rgba(0, 0, 0, 0.5)"}
+        textContent={"Please Wait..."}
+        textStyle={styles.spinnerTextStyle}
+      />
     );
   }
   return (

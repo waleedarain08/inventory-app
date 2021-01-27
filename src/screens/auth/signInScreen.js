@@ -44,9 +44,8 @@ const SignInScreen = ({ navigation }) => {
     return () => backHandler.remove();
   }, []);
 
-  const [emailAddress, setemailAddress] = useState("admin@admin.com");
-  const [password, setPassword] = useState("abcdef");
-  const [token, setToken] = useState("Token-For-Now");
+  const [emailAddress, setemailAddress] = useState("");
+  const [password, setPassword] = useState("");
   const [SignUpErrors, setSignUpErrors] = useState({});
   const [isLoading, setLoading] = useState(false);
 
@@ -63,6 +62,11 @@ const SignInScreen = ({ navigation }) => {
       password: password,
     };
 
+    const data2 = {
+      username: "admin",
+      password: "admin12",
+    };
+
     const messages = {
       required: (field) => `${field} is required`,
       "email.email": "Please enter a valid email address",
@@ -72,14 +76,15 @@ const SignInScreen = ({ navigation }) => {
     validateAll(data, rules, messages)
       .then(() => {
         Keyboard.dismiss();
+        setSignUpErrors({});
         setLoading(true);
-        //console.log(data);
-        Api.POST("todos", data).then((response) => {
-          console.log(response)
+        Api.POST("auth/login", data).then((response) => {
+          console.log(response);
           setLoading(false);
-          if (response == "Error") {
-            alert("Something went wrong!");
+          if (response.statusCode>=400) {
+            Alert.alert("Sorry!",response.errorMessage);
           } else {
+            const token = response.access_token;
             signIn({ emailAddress, password, token });
           }
         });

@@ -1,55 +1,110 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import {
   StyleSheet,
   Text,
   View,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 // import { validateAll } from "indicative/validator";
 import { Input, Card, Button, CheckBox } from "react-native-elements";
+import Spinner from "react-native-loading-spinner-overlay";
+import RadioButtonRN from "radio-buttons-react-native";
+import { AuthContext } from "../../utils/authContext";
+import { MyContext } from "../../utils/myContext";
+import { Api } from "../../utils/Api";
+
+const items = [
+  {
+    label: "Machine",
+  },
+  {
+    label: "Lcd",
+  },
+  {
+    label: "Headphone",
+  },
+  {
+    label: "Keyboard",
+  },
+  {
+    label: "Mouse",
+  },
+  {
+    label: "Extra Screen",
+  },
+];
 
 const AssetRequest = ({ navigation }) => {
+  const [state, dispatch] = useContext(MyContext);
+  const { signIn } = useContext(AuthContext);
+
   const [isLoading, setLoading] = useState(false);
   const [devName, setDevName] = useState("Waleed J.");
-  const [machine, setMachine] = useState(false);
-  const [lcd, setLcd] = useState(false);
-  const [headPhone, setheadPhone] = useState(false);
-  const [extraScreen, setextraScreen] = useState(false);
-  const [mouse, setMouse] = useState(false);
-  const [keyboard, setKeyboard] = useState(false);
-  const [subject, setSubject] = useState('');
-  const [comment, setComment] = useState('');
-  const [internetDevice, setInternetDevice] = useState(false);
+  const [item,setItem] = useState("");
+  // const [machine, setMachine] = useState(false);
+  // const [lcd, setLcd] = useState(false);
+  // const [headPhone, setheadPhone] = useState(false);
+  // const [extraScreen, setextraScreen] = useState(false);
+  // const [mouse, setMouse] = useState(false);
+  // const [keyboard, setKeyboard] = useState(false);
+  const [subject, setSubject] = useState("");
+  const [comment, setComment] = useState("");
 
-  //useEffect(() => {}, []);
+
+  const selectOnlyThis = (id) => {
+    var myCheckbox = document.getElementsByName("myCheckbox");
+    Array.prototype.forEach.call(myCheckbox, function (el) {
+      el.checked = false;
+    });
+    id.checked = true;
+  };
+
+  const data = {
+    userId: "d5c4bd8f-5e83-4b66-a950-e012c83fdfea",
+    type: "request",
+    item: item,
+    detail: subject,
+    is_resolved: false,
+  };
 
   const handleSubmit = () => {
-    if(subject===""){
-      alert("Please enter subject.")
-    }
-    else if (
-      !(
-        machine ||
-        lcd ||
-        headPhone ||
-        extraScreen ||
-        mouse ||
-        keyboard ||
-        internetDevice
-      )
-    ) {
+    console.log(state.userToken);
+    if (subject === "") {
+      alert("Please enter subject.");
+    } else if (item === "") {
       alert("Please select atleast one asset to continue.");
     } else {
-      alert(
-        "Request submitted sucessfully , please wait for admin approval you can check status from request list screen."
-      );
-      navigation.navigate("Dashboard");
+      setLoading(true);
+      Api.POST("requests", data, state.userToken).then((response) => {
+        console.log(response);
+        setLoading(false);
+        if (response.statusCode >= 400) {
+          Alert.alert("Sorry!", response.errorMessage);
+          if (response.statusCode == 401) {
+            signIn();
+          }
+        } else {
+          Alert.alert(
+            "Congratulations",
+            "Request submitted successfully. Wait for response"
+          );
+          navigation.navigate("History");
+        }
+      });
     }
   };
 
   return (
     <View style={[styles.container, { backgroundColor: "#303131" }]}>
+      <Spinner
+        visible={isLoading}
+        color={"#fff"}
+        overlayColor={"rgba(0, 0, 0, 0.5)"}
+        textContent={"Please Wait..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -65,25 +120,36 @@ const AssetRequest = ({ navigation }) => {
             editable={false}
             onChangeText={setDevName}
           />
-           <Input
+          <Input
             label={"Add Subject"}
-            containerStyle={{marginTop:10}}
+            containerStyle={{ marginTop: 10 }}
             placeholder="Request for a new Headphone."
             value={subject}
             onChangeText={setSubject}
             errorStyle={{ color: "red" }}
           />
-          <Text style={{marginTop:10,color:"#aeaeae",marginLeft:"4%",fontWeight:"bold",fontSize:16}}>Choose Asset</Text>
-          <CheckBox
+          <Text
+            style={{
+              marginTop: 10,
+              color: "#aeaeae",
+              marginLeft: "4%",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            Choose Asset
+          </Text>
+          <RadioButtonRN activeColor={"#0e8424"} data={items} selectedBtn={(e) => setItem(e.label)} />
+          {/* <CheckBox
             title="Machine"
             checked={machine}
-            containerStyle={{marginTop:10}}
-            onPress={() => setMachine(!machine)}
+            containerStyle={{ marginTop: 10 }}
+            onPress={() => (!machine)}
           />
           <CheckBox
             title="Lcd"
             checked={lcd}
-            containerStyle={{marginTop:10}}
+            containerStyle={{ marginTop: 10 }}
             onPress={() => setLcd(!lcd)}
           />
           <CheckBox
@@ -110,13 +176,13 @@ const AssetRequest = ({ navigation }) => {
             title="Internet Device"
             checked={internetDevice}
             onPress={() => setInternetDevice(!internetDevice)}
-          />
+          /> */}
           <Input
             placeholder="Additional Comments or message"
-            leftIcon={{ type: "font-awesome", name: "comment",size:14 }}
+            leftIcon={{ type: "font-awesome", name: "comment", size: 14 }}
             onChangeText={(value) => setComment(value)}
-            inputStyle={{marginLeft:14,fontSize:12}}
-            containerStyle={{marginTop:5}}
+            inputStyle={{ marginLeft: 14, fontSize: 12 }}
+            containerStyle={{ marginTop: 5 }}
             multiline={true}
             value={comment}
           />
