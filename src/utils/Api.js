@@ -12,7 +12,7 @@ export const Api = {
         "Content-Type": "application/json",
       },
     })
-      .then(ApiUtils.checkStatus)
+      //.then(ApiUtils.checkStatus)
       .then((response) => response.json())
       .catch((e) => e);
   },
@@ -20,6 +20,21 @@ export const Api = {
     console.log(data);
     return fetch(`${BaseUrl}${endPoint}`, {
       method: "POST",
+      headers: {
+        Accept: "application/json",
+        'Authorization': 'Bearer ' + token,
+        "Content-Type": "application/json",
+      },
+      body:JSON.stringify(data)
+    })
+      //.then(ApiUtils.checkStatus)
+      .then((response) => response.json())
+      .catch((e) => e);
+  },
+  PUT: function (endPoint,data,token) {
+    console.log(data);
+    return fetch(`${BaseUrl}${endPoint}`, {
+      method: "PUT",
       headers: {
         Accept: "application/json",
         'Authorization': 'Bearer ' + token,

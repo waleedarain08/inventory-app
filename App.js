@@ -35,7 +35,7 @@ const createHomeStack = ({ navigation }) => {
   const { signOut } = useContext(AuthContext);
   const removeToken = async () => {
     try {
-      await AsyncStorage.removeItem("userToken");
+      await AsyncStorage.removeItem("user");
     } catch (e) {
       // removing token failed
     }
@@ -133,33 +133,15 @@ const createHomeStack = ({ navigation }) => {
 };
 
 export default App = ({ navigation }) => {
-  // const { signIn } = useContext(AuthContext); // should be signUp
   const [state, dispatch] = useReducer(reducer, initialState);
-  //console.log(state);
-  useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
-    const bootstrapAsync = async () => {
-      let userToken;
-
-      try {
-        userToken = await AsyncStorage.getItem("userToken");
-      } catch (e) {
-        // Restoring token failed
-      }
-      if (userToken !== null) {
-        dispatch({ type: "SIGN_IN", token: userToken });
-      }
-    };
-    bootstrapAsync();
-  }, []);
-
-  const saveToken = async (token) => {
-    let userToken = token;
+  ///console.log(state);
+ 
+   const saveToken = async (user) => {
 
     try {
-      await AsyncStorage.setItem("userToken", userToken);
+      await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
-      // alert(e);
+       console.log(e);
       // saving token failed
     }
   };
@@ -172,11 +154,11 @@ export default App = ({ navigation }) => {
       signIn: async (data) => {
         if (
           data &&
-          data.emailAddress !== undefined &&
-          data.password !== undefined
+          data.user !== undefined &&
+          data.access_token !== undefined
         ) {
-          saveToken(data.token);
-          dispatch({ type: "SIGN_IN", token: data.token });
+          saveToken(data);
+          dispatch({ type: "SIGN_IN", user: data});
         } else {
           dispatch({ type: "TO_SIGNIN_PAGE" });
         }
@@ -200,12 +182,17 @@ export default App = ({ navigation }) => {
   );
 
   const chooseScreen = (state) => {
+    console.log(state);
     let navigateTo = stateConditionString(state);
     let arr = [];
-
     switch (navigateTo) {
       case "LOAD_APP":
-        arr.push(<Stack.Screen name="Splash" component={SplashScreen} />);
+        arr.push(<Stack.Screen  options={{
+          headerShown: false,
+          title: "Welcome",
+          headerStyle: { backgroundColor: "#8E040A" },
+        }}
+         name="Splash" component={SplashScreen} />);
         break;
 
       case "LOAD_SIGNUP":

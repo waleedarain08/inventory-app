@@ -1,28 +1,46 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import {
   StyleSheet,
   Text,
   View,
   ScrollView,
-  ActivityIndicator,
+  Alert,
   TouchableOpacity,
 } from "react-native";
 import { validateAll } from "indicative/validator";
 import { Input, Card, Button } from "react-native-elements";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import Spinner from "react-native-loading-spinner-overlay";
+import { AuthContext } from "../../utils/authContext";
+import { MyContext } from "../../utils/myContext";
+import { Api } from "../../utils/Api";
 
-const UpdateUser = ({ navigation }) => {
+const UpdateUser = ({ navigation,route }) => {
+  const [state, dispatch] = useContext(MyContext);
+  const { signIn } = useContext(AuthContext);
+
   const [isLoading, setLoading] = useState(false);
-  const [devName, setDevName] = useState("Waleed J.");
-  const [email, setEmail] = useState("waleed.j@allshorestaffing.com");
-  const [password, setPassword] = useState("abcdef");
+  const [username, setUsername] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("abcdef");
   const [cnic, setCnic] = useState("");
-  const [joiningDate, setJoiningDate] = useState("");
-  const [department, setDepartment] = useState("");
+  const [joining_date, setJoiningDate] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [FormErrors, setFormErrors] = useState({});
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    fillForm();
+  }, []);
+
+  const fillForm = () => {
+    setUsername(route.params.item.username);
+    setMobileNo(route.params.item.mobile_no);
+    setCnic(route.params.item.cnic);
+    setJoiningDate(route.params.item.joining_date);
+    setDesignation(route.params.item.designation);
+  };
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -39,50 +57,72 @@ const UpdateUser = ({ navigation }) => {
 
   const handleSubmit = () => {
     const rules = {
-      devName: "required|string",
-      email: "required|string",
-      password: "required|string",
+      username: "required|string",
       cnic: "required|min:13|max:13",
-      joiningDate: "required|string",
-      department: "required|string",
+      joining_date: "required|string",
+      mobile_no: "required|min:10|max:10",
+      designation: "required|string|min:6|max:40",
     };
 
     const data = {
-      devName: devName,
-      email: email,
-      password: password,
       cnic: cnic,
-      joiningDate: joiningDate,
-      department: department,
+      mobile_no: mobileNo,
+      joining_date: joining_date,
+      designation: designation,
+      username: username,
     };
 
     const messages = {
       required: (field) => `${field} is required`,
-      "devName.alpha": "Employee name contains unallowed characters",
-      "email.email": "Please enter a valid email address",
-      "password.min":
-        "Password is too short. Must be greater than 6 characters",
+      "username.alpha": "Employee name contains unallowed characters",
       "cnic.min": "CNIC should contain 13 digits without -",
       "cnic.max": "CNIC should contain 13 digits without -",
+      "mobile_no.min": "Mobile No should contain 10 digits only without starting 0",
+      "mobile_no.max": "Mobile No should contain 10 digits only without starting 0",
     };
 
     validateAll(data, rules, messages)
       .then(() => {
         setFormErrors({});
-        alert("Profile Updated!");
-        navigation.navigate("Dashboard");
+        setLoading(true);
+        Api.PUT(
+          `admin/update/${route.params.item.id}`,
+          data,
+          state.user.access_token
+        ).then((response) => {
+          console.log(response);
+          setFormErrors({});
+          setLoading(false);
+          if (response.statusCode >= 400) {
+            Alert.alert("Sorry!", response.errorMessage);
+            if (response.statusCode == 401) {
+              signIn();
+            }
+          } else {
+            Alert.alert("Congratulations!", "Profile Updated Successfully");
+            navigation.navigate("Dashboard");
+          }
+        });
       })
       .catch((err) => {
         const formatError = {};
         err.forEach((err) => {
           formatError[err.field] = err.message;
         });
+        console.log(formatError);
         setFormErrors(formatError);
       });
   };
 
   return (
     <View style={[styles.container, { backgroundColor: "#303131" }]}>
+      <Spinner
+        visible={isLoading}
+        color={"#fff"}
+        overlayColor={"rgba(0, 0, 0, 0.5)"}
+        textContent={"Please Wait..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -94,13 +134,13 @@ const UpdateUser = ({ navigation }) => {
           <Input
             label={"Employee Name"}
             placeholder="Enter Employee Name"
-            value={devName}
-            onChangeText={setDevName}
+            value={username}
+            onChangeText={setUsername}
             editable={false}
             errorStyle={{ color: "red" }}
-            errorMessage={FormErrors ? FormErrors.devName : null}
+            errorMessage={FormErrors ? FormErrors.username : null}
           />
-          <Input
+          {/* <Input
             label={"Email Address"}
             placeholder="Enter Email Address"
             value={email}
@@ -118,6 +158,16 @@ const UpdateUser = ({ navigation }) => {
             onChangeText={setPassword}
             errorStyle={{ color: "red" }}
             errorMessage={FormErrors ? FormErrors.password : null}
+          /> */}
+          <Input
+            label={"Mobile"}
+            placeholder="03335001234"
+            value={mobileNo}
+            keyboardType={"number-pad"}
+            containerStyle={{ marginTop: 10 }}
+            onChangeText={setMobileNo}
+            errorStyle={{ color: "red" }}
+            errorMessage={FormErrors ? FormErrors.mobile_no : null}
           />
           <Input
             label={"CNIC"}
@@ -135,14 +185,14 @@ const UpdateUser = ({ navigation }) => {
             <Input
               label={"Joining Date"}
               placeholder="Enter Joining Date"
-              value={joiningDate}
+              value={joining_date}
               pointerEvents="none"
               editable={false}
               containerStyle={{ marginTop: 10 }}
               errorStyle={{ color: "red" }}
               errorMessage={
                 FormErrors
-                  ? FormErrors.joiningDate && "Joining Date is required"
+                  ? FormErrors.joining_date && "Joining Date is required"
                   : null
               }
             />
@@ -155,13 +205,13 @@ const UpdateUser = ({ navigation }) => {
             onCancel={hideDatePicker}
           />
           <Input
-            label={"Department"}
-            placeholder="Enter Department"
-            value={department}
+            label={"Designation"}
+            placeholder="Enter Designation"
+            value={designation}
             containerStyle={{ marginTop: 10 }}
-            onChangeText={setDepartment}
+            onChangeText={setDesignation}
             errorStyle={{ color: "red" }}
-            errorMessage={FormErrors ? FormErrors.department : null}
+            errorMessage={FormErrors ? FormErrors.designation : null}
           />
           <Button
             buttonStyle={{

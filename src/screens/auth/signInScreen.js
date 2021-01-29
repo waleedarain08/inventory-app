@@ -79,13 +79,12 @@ const SignInScreen = ({ navigation }) => {
         setSignUpErrors({});
         setLoading(true);
         Api.POST("auth/login", data).then((response) => {
-          console.log(response);
+          //console.log(response);
           setLoading(false);
           if (response.statusCode>=400) {
             Alert.alert("Sorry!",response.errorMessage);
           } else {
-            const token = response.access_token;
-            signIn({ emailAddress, password, token });
+            signIn( response );
           }
         });
       })

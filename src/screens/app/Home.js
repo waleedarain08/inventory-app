@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
-import AsyncStorage from "@react-native-community/async-storage";
+import { MyContext } from "../../utils/myContext";
 
 const Dashboard = ({ navigation }) => {
-  const [isAdmin, setAdmin] = useState(true);
+  const [state, dispatch] = useContext(MyContext);
   
-
-  if (isAdmin) {
+  
+  if (state.user.user.role) {
     return (
       <View style={styles.main}>
         <View style={{ flex: 0.7 }}></View>
@@ -55,15 +55,7 @@ const Dashboard = ({ navigation }) => {
             <Text style={styles.icontext}>Generate{"\n"}QR Code</Text>
           </TouchableOpacity>
         </View>
-        {/* <View style={{ flex: 0.7 }}></View> */}
-        <TouchableOpacity
-          style={{ flex: 0.7,justifyContent:"center",alignItems:"center" }}
-          onPress={() => setAdmin(!isAdmin)}
-        >
-          <Text style={{color:"#fff"}}>
-            Tap to see {!isAdmin ? "Admin" : "Employee"} view for a time being.
-          </Text>
-        </TouchableOpacity>
+        <View style={{ flex: 0.7 }}></View>
       </View>
     );
   } else {
@@ -80,22 +72,22 @@ const Dashboard = ({ navigation }) => {
             <Text style={styles.icontext}>Create{"\n"}Asset Request</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Update Profile")}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="update" size={40} color="#fff" />
-            <Text style={styles.icontext}>Update{"\n"}Profile</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
-          <TouchableOpacity
             onPress={() => navigation.navigate("History", { isEmployee: 1 })}
             activeOpacity={0.8}
             style={styles.column}
           >
             <Icon3 name="format-list-bulleted" size={40} color="#fff" />
             <Text style={styles.icontext}>View My{"\n"}Requests Status</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+        <TouchableOpacity
+            onPress={() => navigation.navigate("Scan-qr-code")}
+            activeOpacity={0.8}
+            style={styles.column}
+          >
+            <Icon3 name="qrcode-scan" size={40} color="#fff" />
+            <Text style={styles.icontext}>Scan{"\n"}QR Code</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("My QR")}
@@ -106,16 +98,7 @@ const Dashboard = ({ navigation }) => {
             <Text style={styles.icontext}>View{"\n"}My Qr Code</Text>
           </TouchableOpacity>
         </View>
-        {/* <View style={{ flex: 0.7 }}> */}
-        <TouchableOpacity
-          style={{ flex: 0.7,justifyContent:"center",alignItems:"center" }}
-          onPress={() => setAdmin(!isAdmin)}
-        >
-          <Text style={{color:"#fff"}}>
-            Tap to see {!isAdmin ? "Admin" : "Employee"} view for a time being.
-          </Text>
-        </TouchableOpacity>
-        {/* </View> */}
+        <View style={{ flex: 0.7 }}></View>
       </View>
     );
   }

@@ -15,6 +15,8 @@ import Spinner from "react-native-loading-spinner-overlay";
 //import { reducer, initialState } from "../../reducer.js";
 //import { AuthContext } from "../../utils/authContext";
 import { MyContext } from "../../utils/myContext";
+import { AuthContext } from "../../utils/authContext";
+
 
 const DATA = [
   {
@@ -82,8 +84,9 @@ const DATA = [
   },
 ];
 
-export default History = ({ navigaton, route }) => {
+export default History = ({ navigation, route }) => {
   const [state, dispatch] = useContext(MyContext);
+  const { signIn } = useContext(AuthContext);
   const [selectedId, setSelectedId] = useState(
     "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"
   );
@@ -91,16 +94,18 @@ export default History = ({ navigaton, route }) => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [dataSource, setDataSource] = useState([]);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(state.userToken);
-    setLoading(true);
-    Api.GET("requests", state.userToken).then((response) => {
-      console.log(response);
+    //setLoading(true);
+    Api.GET("requests", state.user.access_token).then((response) => {
+      //console.log(response);
       setLoading(false);
       if (response.statusCode >= 400) {
         Alert.alert("Sorry!", response.errorMessage);
+        if (response.statusCode == 401) {
+          signIn();
+        }
       } else {
         setData(response);
         setEmployee(route.params.isEmployee);
@@ -110,7 +115,7 @@ export default History = ({ navigaton, route }) => {
 
   SearchFilterFunction = (text) => {
     const newData = data.filter(function (item) {
-      const itemData = item.title ? item.title.toUpperCase() : "".toUpperCase();
+      const itemData = item.user.username ? item.user.username.toUpperCase() : "".toUpperCase();
       const textData = text.toUpperCase();
       return itemData.indexOf(textData) > -1;
     });
@@ -119,45 +124,56 @@ export default History = ({ navigaton, route }) => {
     setSearch(text);
   };
 
-  const Item = ({ item, onPress, style }) => (
+  const Item = ({ item, onPress, style }) => {
+    var status;
+    var indicator;
+    if(item.status===0){
+     status="Requested" 
+     indicator="yellow"
+    }else if(item.status===1){
+      status="Pending" 
+      indicator="orange"
+    }else if(item.status===2){
+      status="Accepted"
+      indicator="green"
+    }else{
+      status="Declined"
+      indicator="red"
+    }
+    return(
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View>
-        {!isEmployee && <Text style={styles.title}>{item.__user__.username}</Text>}
-        <Text style={[styles.title, { fontSize: 12 }]}>{item.item}</Text>
+        {!isEmployee && <Text style={styles.title}>{item.user.username}</Text>}
+        <Text style={[styles.title, { fontSize: 13 }]}>{item.item}</Text>
         <Text style={[styles.title, { fontSize: 12 }]}>{item.detail}</Text>
-        {/* <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text> */}
+        <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text>
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text style={[styles.title, { fontSize: 12 }]}>{item.is_resolved}</Text>
+        <Text style={[styles.title, { fontSize: 13, color:indicator }]}>{status}</Text>
       </View>
     </TouchableOpacity>
-  );
+  )};
 
   const renderItem = ({ item }) => {
     const backgroundColor = item.id === selectedId ? "#8E040A" : "#303131";
     return (
       <Item
         item={item}
-        onPress={() => setSelectedId(item.id)}
+        onPress={() => item.user.role?navigation.navigate("ReportDetail",{item}):setSelectedId(item.id)}
         style={{ backgroundColor }}
       />
     );
   };
-  if (data.length === 0) {
+
+  if (data.length === 0 && !isLoading) {
     return (
-      // <View style={styles.container}>
-      //   <Text
-      //     style={{
-      //       color: "#fff",
-      //       textAlign: "center",
-      //       fontSize: 16,
-      //       marginTop: "5%",
-      //       letterSpacing: 5,
-      //     }}
-      //   >
-      //     Loading . . .
-      //   </Text>
-      // </View>
+      <View style={styles.container}>
+        <Text style={{ color: "#fff",textAlign:"center",fontSize:16,marginTop:"5%",letterSpacing:5}}>No Record Found</Text>
+      </View>
+    );
+  }
+  return (
+    <View style={styles.container}>
       <Spinner
         visible={isLoading}
         color={"#fff"}
@@ -165,10 +181,6 @@ export default History = ({ navigaton, route }) => {
         textContent={"Please Wait..."}
         textStyle={styles.spinnerTextStyle}
       />
-    );
-  }
-  return (
-    <View style={styles.container}>
       {!isEmployee && (
         <SearchBar
           round
@@ -219,4 +231,8 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "800",
   },
+  spinnerTextStyle: {
+    color: "#fff",
+    letterSpacing: 3,
+  }
 });

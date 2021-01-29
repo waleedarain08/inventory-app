@@ -36,17 +36,6 @@ const SignUpScreen = ({ navigation }) => {
 
   const { signUp, signIn } = useContext(AuthContext);
 
-  const makeid = (length) => {
-    var result = "";
-    var characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  };
-
   const handleSignUp = () => {
     const rules = {
       username: "required|string|max:20",
@@ -67,7 +56,6 @@ const SignUpScreen = ({ navigation }) => {
       joining_date: joiningDate,
       designation: designation,
       username: username,
-      designation: designation,
     };
 
     const messages = {
@@ -92,7 +80,7 @@ const SignUpScreen = ({ navigation }) => {
           if (response.statusCode >= 400) {
             Alert.alert("Sorry!", response.errorMessage);
           } else {
-            signIn();
+            signIn(null);
             Alert.alert(
               "Congratulations",
               "Account created successfully,you can now signin"

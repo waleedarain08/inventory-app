@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext} from "react";
 import {
   SafeAreaView,
   View,
@@ -6,11 +6,16 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import {SearchBar} from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Api } from "../../utils/Api";
 import Spinner from "react-native-loading-spinner-overlay";
+import { MyContext } from "../../utils/myContext";
+import { AuthContext } from "../../utils/authContext";
+
+
 
 
 const DATA = [
@@ -62,28 +67,39 @@ const DATA = [
 ];
 
 export default Reports = ({ navigation }) => {
+
+  const [state, dispatch] = useContext(MyContext);
+  const { signIn } = useContext(AuthContext);
   const [selectedId, setSelectedId] = useState(
     "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"
   );
   const [data, setData] = useState([]);
   const [search,setSearch] = useState('');
   const [dataSource,setDataSource] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+
   
 
   useEffect(() => {
-    Api.GET("todos").then((response) => {
-     // console.log(response)
-      if (response == "Error") {
-        alert("Something went wrong!");
+    setLoading(true);
+    Api.GET("admin/users", state.user.access_token).then((response) => {
+      console.log(response);
+      setLoading(false);
+      if (response.statusCode >= 400) {
+        Alert.alert("Sorry!", response.errorMessage);
+        if (response.statusCode == 401) {
+          signIn();
+        }
       } else {
-        setData(DATA);
+        setData(response);
+        //setEmployee(route.params.isEmployee);
       }
     });
   }, []);
 
   SearchFilterFunction = (text) => {
     const newData = data.filter(function(item) {
-      const itemData = item.title ? item.title.toUpperCase() : ''.toUpperCase();
+      const itemData = item.username ? item.username.toUpperCase() : ''.toUpperCase();
       const textData = text.toUpperCase();
       return itemData.indexOf(textData) > -1;
     });
@@ -94,13 +110,13 @@ export default Reports = ({ navigation }) => {
 
   goNext = (item) => {
     setSelectedId(item.id);
-    navigation.navigate("ReportDetail", { item });
+    navigation.navigate("Update Profile", { item });
   };
 
   const Item = ({ item, onPress, style }) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View>
-        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.title}>{item.username}</Text>
         <Text style={[styles.title, { fontSize: 11 }]}>Emp Id : {item.id}</Text>
       </View>
       <Icon
@@ -122,15 +138,23 @@ export default Reports = ({ navigation }) => {
       />
     );
   };
-  if (data.length === 0) {
+ 
+  if (data.length === 0 && !isLoading) {
     return (
       <View style={styles.container}>
-        <Text style={{ color: "#fff",textAlign:"center",fontSize:16,marginTop:"5%",letterSpacing:5}}>Loading . . .</Text>
+        <Text style={{ color: "#fff",textAlign:"center",fontSize:16,marginTop:"5%",letterSpacing:5}}>No Record Found</Text>
       </View>
     );
   }
   return (
     <View style={styles.container}>
+       <Spinner
+        visible={isLoading}
+        color={"#fff"}
+        overlayColor={"rgba(0, 0, 0, 0.5)"}
+        textContent={"Please Wait..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <SearchBar
           round
           searchIcon={{ size: 24 }}
@@ -179,4 +203,8 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "800",
   },
+  spinnerTextStyle: {
+    color: "#fff",
+    letterSpacing: 3,
+  }
 });

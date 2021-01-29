@@ -15,7 +15,7 @@ import { Api } from "../../utils/Api";
 
 const ReportDetail = ({ route, navigation }) => {
   const [editForm, setEditForm] = useState(true);
-  const [devName, setDevName] = useState(route.params.item.title);
+  const [devName, setDevName] = useState(route.params.item.user.username);
   const [subject, setSubject] = useState("Request for headphone change.");
   const [machine, setMachine] = useState("Dell");
   const [lcd, setLcd] = useState("Sony");
@@ -28,7 +28,8 @@ const ReportDetail = ({ route, navigation }) => {
   const [FormErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    navigation.setOptions({ title: route.params.item.title });
+    navigation.setOptions({ title: route.params.item.user.username });
+    setSubject(route.params.item.detail);
   }, []);
 
   const handleSubmit = () => {

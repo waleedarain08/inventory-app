@@ -41,7 +41,7 @@ const AssetRequest = ({ navigation }) => {
   const { signIn } = useContext(AuthContext);
 
   const [isLoading, setLoading] = useState(false);
-  const [devName, setDevName] = useState("Waleed J.");
+  const [devName, setDevName] = useState("");
   const [item,setItem] = useState("");
   // const [machine, setMachine] = useState(false);
   // const [lcd, setLcd] = useState(false);
@@ -52,32 +52,31 @@ const AssetRequest = ({ navigation }) => {
   const [subject, setSubject] = useState("");
   const [comment, setComment] = useState("");
 
+  useEffect(() => {
+    fillForm();
+  }, []);
 
-  const selectOnlyThis = (id) => {
-    var myCheckbox = document.getElementsByName("myCheckbox");
-    Array.prototype.forEach.call(myCheckbox, function (el) {
-      el.checked = false;
-    });
-    id.checked = true;
+  const fillForm = () => {
+    setDevName(state.user.user.username);
   };
 
+
   const data = {
-    userId: "d5c4bd8f-5e83-4b66-a950-e012c83fdfea",
     type: "request",
     item: item,
     detail: subject,
-    is_resolved: false,
+    status: 0,
+    created_at:new Date()
   };
 
   const handleSubmit = () => {
-    console.log(state.userToken);
     if (subject === "") {
       alert("Please enter subject.");
     } else if (item === "") {
       alert("Please select atleast one asset to continue.");
     } else {
       setLoading(true);
-      Api.POST("requests", data, state.userToken).then((response) => {
+      Api.POST("requests", data, state.user.access_token).then((response) => {
         console.log(response);
         setLoading(false);
         if (response.statusCode >= 400) {
