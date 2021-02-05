@@ -6,6 +6,8 @@ import {
   ScrollView,
   Alert,
   TouchableOpacity,
+  Image,
+  Linking
 } from "react-native";
 import { validateAll } from "indicative/validator";
 import { Input, Card, Button } from "react-native-elements";
@@ -14,15 +16,16 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { AuthContext } from "../../utils/authContext";
 import { MyContext } from "../../utils/myContext";
 import { Api } from "../../utils/Api";
+import { ImageUrl } from "../../utils/Api";
 
-const UpdateUser = ({ navigation,route }) => {
+
+const UpdateUser = ({ navigation, route }) => {
   const [state, dispatch] = useContext(MyContext);
   const { signIn } = useContext(AuthContext);
 
   const [isLoading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("abcdef");
+  const [url,setUrl] = useState("");
   const [cnic, setCnic] = useState("");
   const [joining_date, setJoiningDate] = useState("");
   const [designation, setDesignation] = useState("");
@@ -34,12 +37,23 @@ const UpdateUser = ({ navigation,route }) => {
     fillForm();
   }, []);
 
+  const openBrowser = () => {
+    Linking.canOpenURL(url).then(supported => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        console.log("Don't know how to open URI: " + this.props.url);
+      }
+    });
+  }
+
   const fillForm = () => {
     setUsername(route.params.item.username);
     setMobileNo(route.params.item.mobile_no);
     setCnic(route.params.item.cnic);
     setJoiningDate(route.params.item.joining_date);
     setDesignation(route.params.item.designation);
+    setUrl(ImageUrl+ route.params.item.qrcode);
   };
 
   const showDatePicker = () => {
@@ -77,8 +91,10 @@ const UpdateUser = ({ navigation,route }) => {
       "username.alpha": "Employee name contains unallowed characters",
       "cnic.min": "CNIC should contain 13 digits without -",
       "cnic.max": "CNIC should contain 13 digits without -",
-      "mobile_no.min": "Mobile No should contain 10 digits only without starting 0",
-      "mobile_no.max": "Mobile No should contain 10 digits only without starting 0",
+      "mobile_no.min":
+        "Mobile No should contain 10 digits only without starting 0",
+      "mobile_no.max":
+        "Mobile No should contain 10 digits only without starting 0",
     };
 
     validateAll(data, rules, messages)
@@ -130,6 +146,22 @@ const UpdateUser = ({ navigation,route }) => {
           justifyContent: "center",
         }}
       >
+        <View
+          style={{ flex: 0.5, justifyContent: "center", alignItems: "center",padding:10 }}
+        >
+          {route.params.item.qrcode != null ? (
+            <Image
+              source={{
+                uri:url,
+              }}
+              style={{ height: 120, width: 120 }}
+            />
+          ) : (
+            <Text style={{ color: "#fff", marginTop: 10 }}>
+              No Qr-Code generated yet by admin.
+            </Text>
+          )}
+        </View>
         <Card containerStyle={{ borderRadius: 8 }}>
           <Input
             label={"Employee Name"}
@@ -220,8 +252,18 @@ const UpdateUser = ({ navigation,route }) => {
               backgroundColor: "#8E040A",
               elevation: 3,
             }}
-            title="UPDATE"
+            title="UPDATE RECORD"
             onPress={() => handleSubmit()}
+          />
+          <Button
+            buttonStyle={{
+              margin: 10,
+              marginTop: 10,
+              backgroundColor: "#303131",
+              elevation: 3,
+            }}
+            title="PRINT QR-CODE"
+            onPress={() => openBrowser()}
           />
         </Card>
       </ScrollView>

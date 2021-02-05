@@ -8,81 +8,12 @@ import {
   TouchableOpacity,
   Alert
 } from "react-native";
-//import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { SearchBar } from "react-native-elements";
 import { Api } from "../../utils/Api";
 import Spinner from "react-native-loading-spinner-overlay";
-//import { reducer, initialState } from "../../reducer.js";
-//import { AuthContext } from "../../utils/authContext";
 import { MyContext } from "../../utils/myContext";
 import { AuthContext } from "../../utils/authContext";
 
-
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "Ahmed A",
-    created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
-    status: "Pending",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Fahad K",
-    created_at: "12 Dec 2020",
-    request: "Request for change of Charger",
-    status: "Rejected",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Waleed J",
-    created_at: "08 Dec 2020",
-    request: "Request for change of Internet device",
-    status: "Rejected",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29dv3",
-    title: "Saeed A",
-    created_at: "08 Dec 2020",
-    request: "Request for change of usb device",
-    status: "Approved",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d71",
-    title: "Waqas A",
-    created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
-    status: "Approved",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d54",
-    title: "Saeed A",
-    created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
-    status: "Approved",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d00",
-    title: "Waleed J",
-    created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
-    status: "Pending",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d34",
-    title: "Ahmed A",
-    created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
-    status: "Pending",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d40",
-    title: "Rizwan K",
-    created_at: "10 Dec 2020",
-    request: "Request for change of Headphone",
-    status: "Pending",
-  },
-];
 
 export default History = ({ navigation, route }) => {
   const [state, dispatch] = useContext(MyContext);
@@ -90,15 +21,15 @@ export default History = ({ navigation, route }) => {
   const [selectedId, setSelectedId] = useState(
     "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba"
   );
-  const [isEmployee, setEmployee] = useState([]);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    //setLoading(true);
-    Api.GET("requests", state.user.access_token).then((response) => {
+    var endPoint = state.user.user.role?"requests":"requests/filter/?user="+state.user.user.user_id;
+
+    Api.GET(endPoint, state.user.access_token).then((response) => {
       //console.log(response);
       setLoading(false);
       if (response.statusCode >= 400) {
@@ -108,7 +39,6 @@ export default History = ({ navigation, route }) => {
         }
       } else {
         setData(response);
-        setEmployee(route.params.isEmployee);
       }
     });
   }, []);
@@ -129,13 +59,13 @@ export default History = ({ navigation, route }) => {
     var indicator;
     if(item.status===0){
      status="Requested" 
-     indicator="yellow"
+     indicator="#b26a27"
     }else if(item.status===1){
       status="Pending" 
-      indicator="orange"
+      indicator="#ffc805"
     }else if(item.status===2){
       status="Accepted"
-      indicator="green"
+      indicator="#58d622"
     }else{
       status="Declined"
       indicator="red"
@@ -143,13 +73,13 @@ export default History = ({ navigation, route }) => {
     return(
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View>
-        {!isEmployee && <Text style={styles.title}>{item.user.username}</Text>}
+        {state.user.user.role ? <Text style={styles.title}>{item.user.username}</Text>:<View></View>}
         <Text style={[styles.title, { fontSize: 13 }]}>{item.item}</Text>
         <Text style={[styles.title, { fontSize: 12 }]}>{item.detail}</Text>
         <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text>
       </View>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text style={[styles.title, { fontSize: 13, color:indicator }]}>{status}</Text>
+      <View style={{ flexDirection: "row", alignItems: "center" ,justifyContent:"center"}}>
+        <Text style={[styles.title, { fontSize: 15, color:indicator,fontWeight:"bold" }]}>{status}</Text>
       </View>
     </TouchableOpacity>
   )};
@@ -159,7 +89,7 @@ export default History = ({ navigation, route }) => {
     return (
       <Item
         item={item}
-        onPress={() => item.user.role?navigation.navigate("ReportDetail",{item}):setSelectedId(item.id)}
+        onPress={() => state.user.user.role?navigation.navigate("ReportDetail",{item}):setSelectedId(item.id)}
         style={{ backgroundColor }}
       />
     );
@@ -181,7 +111,7 @@ export default History = ({ navigation, route }) => {
         textContent={"Please Wait..."}
         textStyle={styles.spinnerTextStyle}
       />
-      {!isEmployee && (
+      {state.user.user.role ? (
         <SearchBar
           round
           searchIcon={{ size: 24 }}
@@ -190,7 +120,7 @@ export default History = ({ navigation, route }) => {
           placeholder="Type Employee Name Here..."
           value={search}
         />
-      )}
+      ):(<View></View>)}
       <FlatList
         data={dataSource && dataSource.length > 0 ? dataSource : data}
         key={(item) => item.id}

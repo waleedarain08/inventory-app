@@ -56,6 +56,7 @@ const SignUpScreen = ({ navigation }) => {
       joining_date: joiningDate,
       designation: designation,
       username: username,
+      qrcode: ""
     };
 
     const messages = {

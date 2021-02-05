@@ -1,19 +1,20 @@
-import React, { useEffect, useState, useRef } from "react";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
-import QRCode from "react-native-qrcode-svg";
+import React, { useEffect, useState, useContext } from "react";
+import { StyleSheet, Text, View, Image } from "react-native";
 import Spinner from "react-native-loading-spinner-overlay";
+import { MyContext } from "../../utils/myContext";
+import { ImageUrl } from "../../utils/Api";
 
 const ViewQR = () => {
   let logoFromFile = require("../../images/logo.png");
-  const [devName, setDevName] = useState("Waleed J");
+  const [state, dispatch] = useContext(MyContext);
   const [isLoading, setLoading] = useState(true);
-
+  const [url,setUrl] = useState("");
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 600);
+      setUrl(ImageUrl+state.user.user.qrcode);
+    }, 100);
   }, []);
-  
   return (
     <View
       style={[
@@ -25,14 +26,12 @@ const ViewQR = () => {
         },
       ]}
     >
-      {!isLoading && (
-        <QRCode
-          value={[{ data: devName, mode: "byte" }]}
-          logo={logoFromFile}
-          size={240}
-          logoSize={20}
-          logoBackgroundColor={"#fff"}
-        />
+      {state.user.user.qrcode == "" ||
+      state.user.user.qrcode == null ||
+      state.user.user.qrcode == "undefined" ? (
+        <Text style={{fontSize:15}}>Sorry Qr-Code is not generated yet by admin</Text>
+      ) : (
+        <Image source={{uri:url}} style={{height:240,width:240}} />
       )}
       <Spinner
         visible={isLoading}

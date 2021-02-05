@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,23 +6,28 @@ import {
   View,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Input, Card, Button, CheckBox } from "react-native-elements";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import { validateAll } from "indicative/validator";
+import Spinner from "react-native-loading-spinner-overlay";
 import { Api } from "../../utils/Api";
-
+import { MyContext } from "../../utils/myContext";
+import { AuthContext } from "../../utils/authContext";
 
 const ReportDetail = ({ route, navigation }) => {
+  const [state, dispatch] = useContext(MyContext);
+  const { signIn } = useContext(AuthContext);
   const [editForm, setEditForm] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [devName, setDevName] = useState(route.params.item.user.username);
   const [subject, setSubject] = useState("Request for headphone change.");
-  const [machine, setMachine] = useState("Dell");
-  const [lcd, setLcd] = useState("Sony");
-  const [headPhone, setheadPhone] = useState("A4Tech");
-  const [extraScreen, setextraScreen] = useState("Sony");
-  const [mouse, setMouse] = useState("A4Tech");
-  const [keyboard, setKeyboard] = useState("Hp");
+  const [machine, setMachine] = useState("");
+  const [lcd, setLcd] = useState("");
+  const [headPhone, setheadPhone] = useState("");
+  const [extraScreen, setextraScreen] = useState("");
+  const [mouse, setMouse] = useState("");
+  const [keyboard, setKeyboard] = useState("");
   const [accept, setAccept] = useState(true);
   const [decline, setDecline] = useState(false);
   const [FormErrors, setFormErrors] = useState({});
@@ -34,21 +39,43 @@ const ReportDetail = ({ route, navigation }) => {
 
   const handleSubmit = () => {
     const rules = {
-      devName: "required|string",
+      // devName: "required|string",
     };
 
     const data = {
-      devName: devName,
+      type: "request",
+      item: route.params.item.item,
+      detail: route.params.item.detail,
+      created_at: route.params.item.created_at,
+      status: accept ? 2 : 3,
     };
 
     const messages = {
       required: (field) => `${field} is required`,
     };
-
+    //console.log(`requests/${route.params.item.id}`)
     validateAll(data, rules, messages)
       .then(() => {
-        alert("Record Updated");
-        navigation.navigate("Dashboard");
+        //console.log(data);
+        setFormErrors({});
+        setLoading(true);
+        Api.PUT(
+          `requests/${route.params.item.id}`,
+          data,
+          state.user.access_token
+        ).then((response) => {
+          console.log(response);
+          setLoading(false);
+          if (response.statusCode >= 400) {
+            Alert.alert("Sorry!", response.errorMessage);
+            if (response.statusCode == 401) {
+              signIn();
+            }
+          } else {
+            Alert.alert("Thankyou!", "Request status updated successfully.");
+            navigation.navigate("Dashboard");
+          }
+        });
       })
       .catch((err) => {
         const formatError = {};
@@ -60,49 +87,39 @@ const ReportDetail = ({ route, navigation }) => {
   };
 
   const toggleRequest = (val) => {
-    if(val){
+    if (val) {
       setAccept(true);
       setDecline(false);
-    }else{
+    } else {
       setAccept(false);
       setDecline(true);
     }
-  }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* {!editForm && (
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => {
-            setEditForm(true);
-            alert(
-              "Edit assets info and press Update button to save information."
-            );
-          }}
-          style={{
-            position: "absolute",
-            right: "11%",
-            top: "3%",
-            flexDirection: "row",
-          }}
-        >
-          <Icon name="edit" size={20} color="#fff" />
-          <Text style={{ color: "#fff" }}> Edit Info</Text>
-        </TouchableOpacity>
-      )} */}
+      <Spinner
+        visible={isLoading}
+        color={"#fff"}
+        overlayColor={"rgba(0, 0, 0, 0.5)"}
+        textContent={"Please Wait..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <View
         style={{ flex: 0.5, justifyContent: "center", alignItems: "center" }}
       >
-        <Image
-          source={require("../../images/qr-code.png")}
-          style={{
-            width: 120,
-            height: 120,
-            resizeMode: "contain",
-            marginTop: 20,
-          }}
-        />
+        {route.params.item.user.qrcode != null ? (
+          <Image
+            source={{
+              uri: "http://192.168.8.103:3000/" + state.user.user.qrcode,
+            }}
+            style={{ height: 120, width: 120 }}
+          />
+        ) : (
+          <Text style={{ color: "#fff", marginTop: 10 }}>
+            No Qr-Code generated yet by admin.
+          </Text>
+        )}
       </View>
       <View style={{ flex: 1, marginBottom: "5%", justifyContent: "center" }}>
         <Card containerStyle={{ borderRadius: 8 }}>
@@ -115,17 +132,21 @@ const ReportDetail = ({ route, navigation }) => {
             errorStyle={{ color: "red" }}
             errorMessage={FormErrors ? FormErrors.subject : null}
           />
+          <CheckBox
+            title="Accept Request"
+            checked={accept}
+            checkedColor={"#8E040A"}
+            containerStyle={{ marginTop: 10 }}
+            onPress={() => toggleRequest(1)}
+          />
+          <CheckBox
+            title="Decline Request"
+            checked={decline}
+            checkedColor={"#8E040A"}
+            containerStyle={{ marginTop: 10 }}
+            onPress={() => toggleRequest(0)}
+          />
           {/* <Input
-            label={"Dev Name"}
-            placeholder="Enter Dev Name"
-            value={devName}
-            containerStyle={{marginTop:10}}
-            onChangeText={setDevName}
-            editable={editForm}
-            errorStyle={{ color: "red" }}
-            errorMessage={FormErrors ? FormErrors.devName : null}
-          /> */}
-          <Input
             label={"Machine"}
             placeholder="Enter Machine"
             value={machine}
@@ -184,21 +205,7 @@ const ReportDetail = ({ route, navigation }) => {
             onChangeText={setKeyboard}
             errorStyle={{ color: "red" }}
             errorMessage={FormErrors ? FormErrors.keyboard : null}
-          />
-           <CheckBox
-            title="Accept Request"
-            checked={accept}
-            checkedColor={"#8E040A"}
-            containerStyle={{marginTop:10}}
-            onPress={() => toggleRequest(1)}
-          />
-           <CheckBox
-            title="Decline Request"
-            checked={decline}
-            checkedColor={"#8E040A"}
-            containerStyle={{marginTop:10}}
-            onPress={() => toggleRequest(0)}
-          />
+          /> */}
           <Button
             buttonStyle={{
               margin: 10,
@@ -206,7 +213,7 @@ const ReportDetail = ({ route, navigation }) => {
               backgroundColor: "#8E040A",
               elevation: 3,
             }}
-            title="Update Information/QR"
+            title="Save"
             onPress={() => handleSubmit()}
           />
         </Card>

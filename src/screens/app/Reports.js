@@ -83,7 +83,7 @@ export default Reports = ({ navigation }) => {
   useEffect(() => {
     setLoading(true);
     Api.GET("admin/users", state.user.access_token).then((response) => {
-      console.log(response);
+      //console.log(response);
       setLoading(false);
       if (response.statusCode >= 400) {
         Alert.alert("Sorry!", response.errorMessage);

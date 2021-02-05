@@ -79,7 +79,6 @@ const SignInScreen = ({ navigation }) => {
         setSignUpErrors({});
         setLoading(true);
         Api.POST("auth/login", data).then((response) => {
-          //console.log(response);
           setLoading(false);
           if (response.statusCode>=400) {
             Alert.alert("Sorry!",response.errorMessage);

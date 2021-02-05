@@ -2,7 +2,7 @@
 
 import "react-native-gesture-handler";
 import React, { useEffect, useContext, useMemo, useReducer } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity,LogBox } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -28,6 +28,8 @@ import { stateConditionString } from "./src/utils/helpers";
 import { AuthContext } from "./src/utils/authContext";
 import { MyContext } from "./src/utils/myContext";
 import { reducer, initialState } from "./src/reducer";
+
+LogBox.ignoreAllLogs(true) // Ignore log notification by message
 
 const Stack = createStackNavigator();
 
@@ -141,14 +143,11 @@ export default App = ({ navigation }) => {
     try {
       await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (e) {
-       console.log(e);
+      // console.log(e);
       // saving token failed
     }
   };
 
-  // In a production app, we need to send some data (usually username, password) to server and get a token
-  // We will also need to handle errors if sign in failed
-  // After getting token, we need to persist the token using `AsyncStorage`
   const authContextValue = useMemo(
     () => ({
       signIn: async (data) => {
@@ -182,7 +181,7 @@ export default App = ({ navigation }) => {
   );
 
   const chooseScreen = (state) => {
-    console.log(state);
+    //console.log(state);
     let navigateTo = stateConditionString(state);
     let arr = [];
     switch (navigateTo) {
