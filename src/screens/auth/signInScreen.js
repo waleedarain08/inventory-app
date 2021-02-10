@@ -117,6 +117,7 @@ const SignInScreen = ({ navigation }) => {
             label={"Email"}
             placeholder="Enter Email"
             value={emailAddress}
+            autoCapitalize={"none"}
             leftIcon={
               <Icon
                 name="envelope"

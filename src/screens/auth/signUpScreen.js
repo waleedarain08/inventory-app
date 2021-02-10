@@ -27,9 +27,9 @@ const SignUpScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [password_confirmation, setpassword_confirmation] = useState("");
   const [cnic, setCnic] = useState("");
-  const [joiningDate, setJoiningDate] = useState("");
+  const [joining_date, setJoiningDate] = useState("");
   const [designation, setDesignation] = useState("");
-  const [mobileNo, setMobileNo] = useState("");
+  const [mobile_no, setMobileNo] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [SignUpErrors, setSignUpErrors] = useState({});
   const [isLoading, setLoading] = useState(false);
@@ -52,8 +52,8 @@ const SignUpScreen = ({ navigation }) => {
       password: password,
       password_confirmation: password_confirmation,
       cnic: cnic,
-      mobile_no: mobileNo,
-      joining_date: joiningDate,
+      mobile_no: mobile_no,
+      joining_date: joining_date,
       designation: designation,
       username: username,
       qrcode: ""
@@ -67,8 +67,8 @@ const SignUpScreen = ({ navigation }) => {
       "password.confirmed": "Passsword and confrim password do not match",
       "cnic.min": "CNIC should contain 13 digits without -",
       "cnic.max": "CNIC should contain 13 digits without -",
-      "mobileNo.min": "Mobile No should contain 11 digits only",
-      "mobileNo.max": "Mobile No should contain 11 digits only",
+      "mobile_no.min": "Mobile No should contain 11 digits",
+      "mobile_no.max": "Mobile No should contain 11 digits",
     };
 
     validateAll(data, rules, messages)
@@ -76,7 +76,7 @@ const SignUpScreen = ({ navigation }) => {
         setSignUpErrors({});
         setLoading(true);
         Api.POST("auth/register", data).then((response) => {
-          console.log(response);
+          //console.log(response);
           setLoading(false);
           if (response.statusCode >= 400) {
             Alert.alert("Sorry!", response.errorMessage);
@@ -94,6 +94,7 @@ const SignUpScreen = ({ navigation }) => {
       .catch((err) => {
         const formatError = {};
         err.forEach((err) => {
+          console.log(err.message);
           formatError[err.field] = err.message;
         });
         setSignUpErrors(formatError);
@@ -151,6 +152,7 @@ const SignUpScreen = ({ navigation }) => {
             label={"Email"}
             placeholder="Enter Email address"
             value={emailAddress}
+            autoCapitalize={"none"}
             onChangeText={setemailAddress}
             errorStyle={{ color: "red" }}
             errorMessage={SignUpErrors ? SignUpErrors.email : null}
@@ -179,12 +181,12 @@ const SignUpScreen = ({ navigation }) => {
           <Input
             label={"Mobile"}
             placeholder="03335001234"
-            value={mobileNo}
+            value={mobile_no}
             keyboardType={"number-pad"}
             containerStyle={{ marginTop: 10 }}
             onChangeText={setMobileNo}
             errorStyle={{ color: "red" }}
-            errorMessage={SignUpErrors ? SignUpErrors.mobileNo : null}
+            errorMessage={SignUpErrors ? SignUpErrors.mobile_no : null}
           />
           <Input
             label={"CNIC"}
@@ -202,14 +204,14 @@ const SignUpScreen = ({ navigation }) => {
             <Input
               label={"Joining Date"}
               placeholder="01-05-2018"
-              value={joiningDate}
+              value={joining_date}
               pointerEvents="none"
               editable={false}
               containerStyle={{ marginTop: 10 }}
               errorStyle={{ color: "red" }}
               errorMessage={
                 SignUpErrors
-                  ? SignUpErrors.joiningDate && "joining date is required"
+                  ? SignUpErrors.joining_date && "joining date is required"
                   : null
               }
             />

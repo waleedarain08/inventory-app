@@ -1,6 +1,7 @@
 import { ApiUtils } from "./ApiUtils";
-const BaseUrl = "http://192.168.8.103:3000/";
-export const ImageUrl = "http://192.168.8.103:3000/";
+//const BaseUrl = "http://192.168.8.100:3000/";
+const BaseUrl = "http://204.236.137.244:3000/";
+export const ImageUrl = "http://204.236.137.244:3000/";
 
 export const Api = {
   GET: function (endPoint, token) {
@@ -19,7 +20,7 @@ export const Api = {
     );
   },
   POST: function (endPoint, data, token) {
-    console.log(data);
+    //console.log(data);
     return (
       fetch(`${BaseUrl}${endPoint}`, {
         method: "POST",
@@ -36,7 +37,7 @@ export const Api = {
     );
   },
   PUT: function (endPoint, data, token) {
-    console.log(data);
+    //console.log(data);
     return (
       fetch(`${BaseUrl}${endPoint}`, {
         method: "PUT",

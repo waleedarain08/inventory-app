@@ -7,7 +7,7 @@ import {
   Alert,
   TouchableOpacity,
   Image,
-  Linking
+  Linking,
 } from "react-native";
 import { validateAll } from "indicative/validator";
 import { Input, Card, Button } from "react-native-elements";
@@ -18,14 +18,13 @@ import { MyContext } from "../../utils/myContext";
 import { Api } from "../../utils/Api";
 import { ImageUrl } from "../../utils/Api";
 
-
 const UpdateUser = ({ navigation, route }) => {
   const [state, dispatch] = useContext(MyContext);
   const { signIn } = useContext(AuthContext);
 
   const [isLoading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
-  const [url,setUrl] = useState("");
+  const [url, setUrl] = useState(ImageUrl);
   const [cnic, setCnic] = useState("");
   const [joining_date, setJoiningDate] = useState("");
   const [designation, setDesignation] = useState("");
@@ -38,14 +37,14 @@ const UpdateUser = ({ navigation, route }) => {
   }, []);
 
   const openBrowser = () => {
-    Linking.canOpenURL(url).then(supported => {
+    Linking.canOpenURL(url).then((supported) => {
       if (supported) {
         Linking.openURL(url);
       } else {
         console.log("Don't know how to open URI: " + this.props.url);
       }
     });
-  }
+  };
 
   const fillForm = () => {
     setUsername(route.params.item.username);
@@ -53,7 +52,7 @@ const UpdateUser = ({ navigation, route }) => {
     setCnic(route.params.item.cnic);
     setJoiningDate(route.params.item.joining_date);
     setDesignation(route.params.item.designation);
-    setUrl(ImageUrl+ route.params.item.qrcode);
+    setUrl(ImageUrl + route.params.item.qrcode);
   };
 
   const showDatePicker = () => {
@@ -147,19 +146,26 @@ const UpdateUser = ({ navigation, route }) => {
         }}
       >
         <View
-          style={{ flex: 0.5, justifyContent: "center", alignItems: "center",padding:10 }}
+          style={{
+            flex: 0.5,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 10,
+          }}
         >
-          {route.params.item.qrcode != null ? (
-            <Image
-              source={{
-                uri:url,
-              }}
-              style={{ height: 120, width: 120 }}
-            />
-          ) : (
+          {route.params.item.qrcode == "" ||
+          route.params.item.qrcode == null ||
+          route.params.item.qrcode == "undefined" ? (
             <Text style={{ color: "#fff", marginTop: 10 }}>
               No Qr-Code generated yet by admin.
             </Text>
+          ) : (
+            <Image
+              source={{
+                uri: url,
+              }}
+              style={{ height: 120, width: 120 }}
+            />
           )}
         </View>
         <Card containerStyle={{ borderRadius: 8 }}>
@@ -255,6 +261,7 @@ const UpdateUser = ({ navigation, route }) => {
             title="UPDATE RECORD"
             onPress={() => handleSubmit()}
           />
+          {route.params.item.qrcode != "" ?
           <Button
             buttonStyle={{
               margin: 10,
@@ -264,7 +271,7 @@ const UpdateUser = ({ navigation, route }) => {
             }}
             title="PRINT QR-CODE"
             onPress={() => openBrowser()}
-          />
+          />:<View></View>}
         </Card>
       </ScrollView>
     </View>

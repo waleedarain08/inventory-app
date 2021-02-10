@@ -14,6 +14,8 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { Api } from "../../utils/Api";
 import { MyContext } from "../../utils/myContext";
 import { AuthContext } from "../../utils/authContext";
+import { ImageUrl } from "../../utils/Api";
+
 
 const ReportDetail = ({ route, navigation }) => {
   const [state, dispatch] = useContext(MyContext);
@@ -28,6 +30,7 @@ const ReportDetail = ({ route, navigation }) => {
   const [extraScreen, setextraScreen] = useState("");
   const [mouse, setMouse] = useState("");
   const [keyboard, setKeyboard] = useState("");
+  const [url,setUrl] = useState("url");
   const [accept, setAccept] = useState(true);
   const [decline, setDecline] = useState(false);
   const [FormErrors, setFormErrors] = useState({});
@@ -35,6 +38,7 @@ const ReportDetail = ({ route, navigation }) => {
   useEffect(() => {
     navigation.setOptions({ title: route.params.item.user.username });
     setSubject(route.params.item.detail);
+    setUrl(ImageUrl+route.params.item.user.qrcode);
   }, []);
 
   const handleSubmit = () => {
@@ -108,10 +112,10 @@ const ReportDetail = ({ route, navigation }) => {
       <View
         style={{ flex: 0.5, justifyContent: "center", alignItems: "center" }}
       >
-        {route.params.item.user.qrcode != null ? (
+        {route.params.item.user.qrcode != "" ? (
           <Image
             source={{
-              uri: "http://192.168.8.103:3000/" + state.user.user.qrcode,
+              uri:url,
             }}
             style={{ height: 120, width: 120 }}
           />
