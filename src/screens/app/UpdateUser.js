@@ -17,19 +17,23 @@ import { AuthContext } from "../../utils/authContext";
 import { MyContext } from "../../utils/myContext";
 import { Api } from "../../utils/Api";
 import { ImageUrl } from "../../utils/Api";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const UpdateUser = ({ navigation, route }) => {
   const [state, dispatch] = useContext(MyContext);
   const { signIn } = useContext(AuthContext);
 
   const [isLoading, setLoading] = useState(false);
+  const [editable, setEditable] = useState(true);
   const [username, setUsername] = useState("");
   const [url, setUrl] = useState(ImageUrl);
-  const [cnic, setCnic] = useState("");
-  const [joining_date, setJoiningDate] = useState("");
-  const [designation, setDesignation] = useState("");
-  const [mobileNo, setMobileNo] = useState("");
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [machine, setMachine] = useState("");
+  const [lcd, setLcd] = useState("");
+  const [headPhone, setheadPhone] = useState("");
+  const [extraScreen, setextraScreen] = useState("");
+  const [mouse, setMouse] = useState("");
+  const [keyboard, setKeyboard] = useState("");
+  const [lastRequest, setLastRequest] = useState("");
   const [FormErrors, setFormErrors] = useState({});
 
   useEffect(() => {
@@ -41,18 +45,38 @@ const UpdateUser = ({ navigation, route }) => {
       if (supported) {
         Linking.openURL(url);
       } else {
-        console.log("Don't know how to open URI: " + this.props.url);
+        console.log("Don't know how to open URI: " + url);
       }
     });
   };
 
   const fillForm = () => {
+    setLoading(true);
+    navigation.setOptions({ title: "Employee Assets Detail" });
     setUsername(route.params.item.username);
-    setMobileNo(route.params.item.mobile_no);
-    setCnic(route.params.item.cnic);
-    setJoiningDate(route.params.item.joining_date);
-    setDesignation(route.params.item.designation);
+    setMachine(route.params.item.machine);
+    setLcd(route.params.item.lcd);
+    setheadPhone(route.params.item.headPhone);
+    setextraScreen(route.params.item.extraScreen);
+    setMouse(route.params.item.mouse);
+    setKeyboard(route.params.item.keyboard);
     setUrl(ImageUrl + route.params.item.qrcode);
+    Api.GET(
+      `requests/lastRequest/${route.params.item.id}`,
+      state.user.access_token
+    ).then((response) => {
+      setLoading(false);
+      if (response && response.statusCode >= 400) {
+        Alert.alert("Sorry!", response.errorMessage);
+        if (response.statusCode == 401) {
+          signIn();
+        }
+      } else {
+        typeof response.detail != "undefined"
+          ? setLastRequest(response.detail)
+          : setLastRequest("");
+      }
+    });
   };
 
   const showDatePicker = () => {
@@ -71,29 +95,26 @@ const UpdateUser = ({ navigation, route }) => {
   const handleSubmit = () => {
     const rules = {
       username: "required|string",
-      cnic: "required|min:13|max:13",
-      joining_date: "required|string",
-      mobile_no: "required|min:10|max:10",
-      designation: "required|string|min:6|max:40",
+      machine: "required|string",
+      lcd: "required|string",
+      headPhone: "required|string",
+      extraScreen: "required|string",
+      mouse: "required|string",
+      keyboard: "required|string",
     };
 
     const data = {
-      cnic: cnic,
-      mobile_no: mobileNo,
-      joining_date: joining_date,
-      designation: designation,
       username: username,
+      machine: machine,
+      lcd: lcd,
+      headPhone: headPhone,
+      extraScreen: extraScreen,
+      mouse: mouse,
+      keyboard: keyboard,
     };
 
     const messages = {
       required: (field) => `${field} is required`,
-      "username.alpha": "Employee name contains unallowed characters",
-      "cnic.min": "CNIC should contain 13 digits without -",
-      "cnic.max": "CNIC should contain 13 digits without -",
-      "mobile_no.min":
-        "Mobile No should contain 10 digits only without starting 0",
-      "mobile_no.max":
-        "Mobile No should contain 10 digits only without starting 0",
     };
 
     validateAll(data, rules, messages)
@@ -105,7 +126,7 @@ const UpdateUser = ({ navigation, route }) => {
           data,
           state.user.access_token
         ).then((response) => {
-          console.log(response);
+          //console.log(response);
           setFormErrors({});
           setLoading(false);
           if (response.statusCode >= 400) {
@@ -124,7 +145,7 @@ const UpdateUser = ({ navigation, route }) => {
         err.forEach((err) => {
           formatError[err.field] = err.message;
         });
-        console.log(formatError);
+        //console.log(formatError);
         setFormErrors(formatError);
       });
   };
@@ -178,78 +199,94 @@ const UpdateUser = ({ navigation, route }) => {
             errorStyle={{ color: "red" }}
             errorMessage={FormErrors ? FormErrors.username : null}
           />
-          {/* <Input
-            label={"Email Address"}
-            placeholder="Enter Email Address"
-            value={email}
+          <Input
+            label={"Machine"}
+            placeholder="Enter Machine"
+            value={machine}
             containerStyle={{ marginTop: 10 }}
-            onChangeText={setEmail}
+            onChangeText={setMachine}
+            editable={route.params.item.editable}
             errorStyle={{ color: "red" }}
-            errorMessage={FormErrors ? FormErrors.email : null}
+            errorMessage={FormErrors ? FormErrors.machine : null}
           />
           <Input
-            label={"Password"}
-            placeholder="Enter Password"
-            value={password}
-            secureTextEntry
+            label={"Lcd"}
+            placeholder="Enter Lcd"
+            value={lcd}
             containerStyle={{ marginTop: 10 }}
-            onChangeText={setPassword}
+            onChangeText={setLcd}
+            editable={route.params.item.editable}
             errorStyle={{ color: "red" }}
-            errorMessage={FormErrors ? FormErrors.password : null}
-          /> */}
-          <Input
-            label={"Mobile"}
-            placeholder="03335001234"
-            value={mobileNo}
-            keyboardType={"number-pad"}
-            containerStyle={{ marginTop: 10 }}
-            onChangeText={setMobileNo}
-            errorStyle={{ color: "red" }}
-            errorMessage={FormErrors ? FormErrors.mobile_no : null}
+            errorMessage={FormErrors ? FormErrors.lcd : null}
           />
           <Input
-            label={"CNIC"}
-            placeholder="Enter CNIC"
-            value={cnic}
-            keyboardType={"number-pad"}
+            label={"Headphone"}
+            placeholder="Enter Headphone"
+            value={headPhone}
             containerStyle={{ marginTop: 10 }}
-            onChangeText={setCnic}
+            onChangeText={setheadPhone}
+            editable={route.params.item.editable}
             errorStyle={{ color: "red" }}
-            errorMessage={FormErrors ? FormErrors.cnic : null}
-          />
-          <TouchableOpacity
-            onPress={() => setDatePickerVisibility(!isDatePickerVisible)}
-          >
-            <Input
-              label={"Joining Date"}
-              placeholder="Enter Joining Date"
-              value={joining_date}
-              pointerEvents="none"
-              editable={false}
-              containerStyle={{ marginTop: 10 }}
-              errorStyle={{ color: "red" }}
-              errorMessage={
-                FormErrors
-                  ? FormErrors.joining_date && "Joining Date is required"
-                  : null
-              }
-            />
-          </TouchableOpacity>
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            maximumDate={new Date()}
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
+            errorMessage={FormErrors ? FormErrors.headPhone : null}
           />
           <Input
-            label={"Designation"}
-            placeholder="Enter Designation"
-            value={designation}
+            label={"Extra Screen"}
+            placeholder="Enter Extra Screen"
+            value={extraScreen}
             containerStyle={{ marginTop: 10 }}
-            onChangeText={setDesignation}
+            onChangeText={setextraScreen}
+            editable={route.params.item.editable}
             errorStyle={{ color: "red" }}
-            errorMessage={FormErrors ? FormErrors.designation : null}
+            errorMessage={FormErrors ? FormErrors.extraScreen : null}
+          />
+          <Input
+            label={"Mouse"}
+            placeholder="Enter Mouse"
+            value={mouse}
+            containerStyle={{ marginTop: 10 }}
+            onChangeText={setMouse}
+            editable={route.params.item.editable}
+            errorStyle={{ color: "red" }}
+            errorMessage={FormErrors ? FormErrors.mouse : null}
+          />
+          <Input
+            label={"Keyboard"}
+            placeholder="Enter Keyboard"
+            value={keyboard}
+            containerStyle={{ marginTop: 10 }}
+            onChangeText={setKeyboard}
+            editable={route.params.item.editable}
+            errorStyle={{ color: "red" }}
+            errorMessage={FormErrors ? FormErrors.keyboard : null}
+          />
+          <Input
+            label={"Last Request"}
+            placeholder="No Request Found"
+            value={lastRequest}
+            containerStyle={{ marginTop: 10 }}
+            onChangeText={setLastRequest}
+            errorStyle={{ color: "red" }}
+            editable={false}
+            rightIcon={
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("History", {
+                    userId: route.params.item.id,
+                  })
+                }
+                style={{
+                  padding: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={{ color: "#8E040A", marginRight: 10 }}>
+                  View All
+                </Text>
+                <Icon name={"list"} size={20} color="#8E040A" />
+              </TouchableOpacity>
+            }
+            errorMessage={FormErrors ? FormErrors.lastRequest : null}
           />
           <Button
             buttonStyle={{
@@ -261,17 +298,20 @@ const UpdateUser = ({ navigation, route }) => {
             title="UPDATE RECORD"
             onPress={() => handleSubmit()}
           />
-          {route.params.item.qrcode != "" ?
-          <Button
-            buttonStyle={{
-              margin: 10,
-              marginTop: 10,
-              backgroundColor: "#303131",
-              elevation: 3,
-            }}
-            title="PRINT QR-CODE"
-            onPress={() => openBrowser()}
-          />:<View></View>}
+          {route.params.item.qrcode != "" ? (
+            <Button
+              buttonStyle={{
+                margin: 10,
+                marginTop: 10,
+                backgroundColor: "#303131",
+                elevation: 3,
+              }}
+              title="PRINT QR-CODE"
+              onPress={() => openBrowser()}
+            />
+          ) : (
+            <View></View>
+          )}
         </Card>
       </ScrollView>
     </View>

@@ -32,7 +32,7 @@ const GenerateQR = ({ navigation }) => {
 
   useEffect(() => {
     setLoading(true);
-    Api.GET("admin/users", state.user.access_token).then((response) => {
+    Api.GET("admin/usersWithoutQr", state.user.access_token).then((response) => {
       setLoading(false);
       if (response.statusCode >= 400) {
         Alert.alert("Sorry!", response.errorMessage);
@@ -79,6 +79,9 @@ const GenerateQR = ({ navigation }) => {
         const formatError = {};
         err.forEach((err) => {
           formatError[err.field] = err.message;
+          if(err.message=="employeeId is required"){
+            Alert.alert("Employee Not Found","Sorry, no employee found whose qr-code is not generated yet. Please create employee profile first.");
+          }
         });
         setFormErrors(formatError);
       });
@@ -99,12 +102,18 @@ const GenerateQR = ({ navigation }) => {
 
   const uploadToServer = () => {
     const payload = {
-      "username":employeeId,
-      "file":qrSvg
+      username:employeeId,
+      machine: machine,
+      lcd: lcd,
+      headPhone: headPhone,
+      extraScreen: extraScreen,
+      mouse: mouse,
+      keyboard: keyboard,
+      file:qrSvg
     }
     setLoading(true);
     Api.POST("admin/upload", payload, state.user.access_token).then((response) => {
-     // console.log(response);
+      //console.log(response);
       setLoading(false);
       if (response.statusCode >= 400) {
         Alert.alert("Sorry!", response.errorMessage);
@@ -183,13 +192,13 @@ const GenerateQR = ({ navigation }) => {
       >
         <QRCode
           value={[
-            { data: devName + "|", mode: "byte" },
-            { data: machine + "|", mode: "byte" },
-            { data: lcd + "|", mode: "byte" },
-            { data: headPhone + "|", mode: "byte" },
-            { data: extraScreen + "|", mode: "byte" },
-            { data: mouse + "|", mode: "byte" },
-            { data: keyboard, mode: "byte" },
+            { data: employeeId , mode: "byte" },
+            // { data: machine + "|", mode: "byte" },
+            // { data: lcd + "|", mode: "byte" },
+            // { data: headPhone + "|", mode: "byte" },
+            // { data: extraScreen + "|", mode: "byte" },
+            // { data: mouse + "|", mode: "byte" },
+            // { data: keyboard, mode: "byte" },
           ]}
           logo={logoFromFile}
           size={240}

@@ -71,13 +71,13 @@ const AssetRequest = ({ navigation }) => {
 
   const handleSubmit = () => {
     if (subject === "") {
-      alert("Please enter subject.");
+      Alert.alert("Validation Failed","Please enter subject.");
     } else if (item === "") {
-      alert("Please select atleast one asset to continue.");
+     Alert.alert("Validation Failed","Please select atleast one asset to continue.");
     } else {
       setLoading(true);
       Api.POST("requests", data, state.user.access_token).then((response) => {
-        console.log(response);
+        //console.log(response);
         setLoading(false);
         if (response.statusCode >= 400) {
           Alert.alert("Sorry!", response.errorMessage);
@@ -87,7 +87,7 @@ const AssetRequest = ({ navigation }) => {
         } else {
           Alert.alert(
             "Congratulations",
-            "Request submitted successfully. Wait for response"
+            "Request submitted successfully.Please wait for response"
           );
           navigation.navigate("History");
         }
@@ -138,7 +138,7 @@ const AssetRequest = ({ navigation }) => {
           >
             Choose Asset
           </Text>
-          <RadioButtonRN activeColor={"#0e8424"} data={items} selectedBtn={(e) => setItem(e.label)} />
+          <RadioButtonRN animationTypes={["shake"]} activeColor={"#8E040A"} data={items} selectedBtn={(e) => setItem(e.label)} />
           {/* <CheckBox
             title="Machine"
             checked={machine}

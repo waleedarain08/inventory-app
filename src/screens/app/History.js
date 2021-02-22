@@ -27,10 +27,9 @@ export default History = ({ navigation, route }) => {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    var endPoint = state.user.user.role?"requests":"requests/filter/?user="+state.user.user.user_id;
+    var endPoint = state.user.user.role?(route.params.userId?"requests/filter/?user="+route.params.userId:"requests"):"requests/filter/?user="+state.user.user.user_id;
 
     Api.GET(endPoint, state.user.access_token).then((response) => {
-      //console.log(response);
       setLoading(false);
       if (response.statusCode >= 400) {
         Alert.alert("Sorry!", response.errorMessage);
@@ -78,8 +77,9 @@ export default History = ({ navigation, route }) => {
         <Text style={[styles.title, { fontSize: 12 }]}>{item.detail}</Text>
         <Text style={[styles.title, { fontSize: 11 }]}>{item.created_at}</Text>
       </View>
-      <View style={{ flexDirection: "row", alignItems: "center" ,justifyContent:"center"}}>
+      <View style={{  alignItems: "center" ,justifyContent:"center"}}>
         <Text style={[styles.title, { fontSize: 15, color:indicator,fontWeight:"bold" }]}>{status}</Text>
+        {item.updated_by!=null?<Text style={{color:"#fff"}}>By : {item.updated_by}</Text>:<View></View>}
       </View>
     </TouchableOpacity>
   )};
@@ -111,7 +111,7 @@ export default History = ({ navigation, route }) => {
         textContent={"Please Wait..."}
         textStyle={styles.spinnerTextStyle}
       />
-      {state.user.user.role ? (
+      {state.user.user.role && !route.params.userId ? (
         <SearchBar
           round
           searchIcon={{ size: 24 }}

@@ -138,7 +138,7 @@ const SignInScreen = ({ navigation }) => {
             leftIcon={
               <Icon
                 name="lock"
-                size={15}
+                size={16}
                 color="#8E040A"
                 style={{ marginRight: "5%", marginLeft: -20 }}
               />
@@ -158,12 +158,12 @@ const SignInScreen = ({ navigation }) => {
             title="SIGN IN"
             onPress={() => handleSignIn()}
           />
-          <Text
+          {/* <Text
             style={{ marginLeft: "17%", marginTop: 5 }}
             onPress={() => signUp()}
           >
             Don't have an account? Sign Up
-          </Text>
+          </Text> */}
         </Card>
       </View>
       <View style={{ flex: 1 }}></View>

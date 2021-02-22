@@ -20,6 +20,7 @@ import { AuthContext } from "../../utils/authContext";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Api } from "../../utils/Api";
 import Spinner from "react-native-loading-spinner-overlay";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const SignUpScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -31,6 +32,7 @@ const SignUpScreen = ({ navigation }) => {
   const [designation, setDesignation] = useState("");
   const [mobile_no, setMobileNo] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [visible,setVisible] = useState(false);
   const [SignUpErrors, setSignUpErrors] = useState({});
   const [isLoading, setLoading] = useState(false);
 
@@ -40,7 +42,7 @@ const SignUpScreen = ({ navigation }) => {
     const rules = {
       username: "required|string|max:20",
       email: "required|email",
-      password: "required|string|min:6|max:40|confirmed",
+      password: "required|string|min:6|max:40",
       cnic: "required|min:13|max:13",
       joining_date: "required|string",
       mobile_no: "required|min:11|max:11",
@@ -56,7 +58,7 @@ const SignUpScreen = ({ navigation }) => {
       joining_date: joining_date,
       designation: designation,
       username: username,
-      qrcode: ""
+      qrcode: "",
     };
 
     const messages = {
@@ -81,15 +83,14 @@ const SignUpScreen = ({ navigation }) => {
           if (response.statusCode >= 400) {
             Alert.alert("Sorry!", response.errorMessage);
           } else {
-            signIn(null);
+            //signIn(null);
+            navigation.navigate("Generate-qr-code");
             Alert.alert(
               "Congratulations",
-              "Account created successfully,you can now signin"
+              "Profile created successfully,you can now generate qrcode of this employee."
             );
           }
         });
-        // signIn();
-        //signUp({ emailAddress, password });
       })
       .catch((err) => {
         const formatError = {};
@@ -110,15 +111,15 @@ const SignUpScreen = ({ navigation }) => {
     setDatePickerVisibility(false);
   };
 
-  useEffect(() => {
-    const backHandle = BackHandler.addEventListener("hardwareBackPress", () => {
-      signIn();
-      return true;
-    });
-    return () => {
-      backHandle.remove();
-    };
-  }, [SignUpErrors]);
+  const generatePassword = () => {
+    if (username != "") {
+      setPassword(`${username}@123`);
+      setpassword_confirmation(`${username}@123`);
+    } else {
+      setPassword("");
+      setpassword_confirmation("");
+    }
+  };
 
   return (
     <View style={{ backgroundColor: "#30313160", flex: 1 }}>
@@ -141,9 +142,10 @@ const SignUpScreen = ({ navigation }) => {
         <Card containerStyle={{ borderRadius: 8 }}>
           <Input
             label={"Enter Name"}
-            placeholder="Enter Your Name"
+            placeholder="Enter Name"
             value={username}
             onChangeText={setUsername}
+            onBlur={generatePassword}
             errorStyle={{ color: "red" }}
             errorMessage={SignUpErrors ? SignUpErrors.username : null}
           />
@@ -163,10 +165,19 @@ const SignUpScreen = ({ navigation }) => {
             placeholder="Enter Password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={visible}
+            rightIcon={
+            <TouchableOpacity onPress={()=>setVisible(!visible)} style={{padding:10 }}>
+            <Icon
+              name={visible?"eye":"eye-slash"}
+              size={18}
+              color="#8E040A"
+            />
+            </TouchableOpacity>
+            }
             errorMessage={SignUpErrors ? SignUpErrors.password : null}
           />
-          <Input
+          {/* <Input
             containerStyle={{ marginTop: 10 }}
             label={"Password Confirm"}
             placeholder="Enter password again"
@@ -177,7 +188,7 @@ const SignUpScreen = ({ navigation }) => {
             errorMessage={
               SignUpErrors ? SignUpErrors.password_confirmation : null
             }
-          />
+          /> */}
           <Input
             label={"Mobile"}
             placeholder="03335001234"
@@ -240,12 +251,12 @@ const SignUpScreen = ({ navigation }) => {
               backgroundColor: "#8E040A",
               elevation: 3,
             }}
-            title="SIGN UP"
+            title="CREATE EMPLOYEE PROFILE"
             onPress={() => handleSignUp()}
           />
-          <Text style={{ marginLeft: "22%" }} onPress={() => signIn()}>
+          {/* <Text style={{ marginLeft: "22%" }} onPress={() => signIn()}>
             Already Signed Up? Sign In
-          </Text>
+          </Text> */}
         </Card>
       </ScrollView>
       {/* <View style={{ flex: 1 }}></View> */}

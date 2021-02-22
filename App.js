@@ -64,6 +64,15 @@ const createHomeStack = ({ navigation }) => {
         component={Dashboard}
         // initialParams={{singOut: signOut}}
       />
+       <Stack.Screen
+        name="Add New Employee"
+        title="Add Employee"
+        options={{
+          headerTintColor: "#fff",
+          headerStyle: { backgroundColor: "#303131" },
+        }}
+        component={SignUpScreen}
+      />
       <Stack.Screen
         name="Generate-qr-code"
         options={{

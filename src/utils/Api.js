@@ -1,5 +1,5 @@
 import { ApiUtils } from "./ApiUtils";
-//const BaseUrl = "http://192.168.8.100:3000/";
+//const BaseUrl = "http://192.168.43.119:3000/";
 const BaseUrl = "http://204.236.137.244:3000/";
 export const ImageUrl = "http://204.236.137.244:3000/";
 

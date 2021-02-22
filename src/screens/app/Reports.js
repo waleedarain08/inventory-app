@@ -16,56 +16,6 @@ import { MyContext } from "../../utils/myContext";
 import { AuthContext } from "../../utils/authContext";
 
 
-
-
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "Waleed J",
-    created_at: "10 Dec 2020",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Saeed A",
-    created_at: "12 Dec 2020",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Waqas S",
-    created_at: "08 Dec 2020",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29dv3",
-    title: "James S",
-    created_at: "08 Dec 2020",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d71",
-    title: "Waqas S",
-    created_at: "10 Dec 2020",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d54",
-    title: "Shahood H",
-    created_at: "10 Dec 2020",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d00",
-    title: "Waleed J",
-    created_at: "10 Dec 2020",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d34",
-    title: "Shahood H",
-    created_at: "10 Dec 2020",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d40",
-    title: "Khurram M",
-    created_at: "10 Dec 2020",
-  },
-];
-
 export default Reports = ({ navigation }) => {
 
   const [state, dispatch] = useContext(MyContext);
@@ -83,7 +33,7 @@ export default Reports = ({ navigation }) => {
   useEffect(() => {
     setLoading(true);
     Api.GET("admin/users", state.user.access_token).then((response) => {
-      //console.log(response);
+     // console.log(response);
       setLoading(false);
       if (response.statusCode >= 400) {
         Alert.alert("Sorry!", response.errorMessage);
@@ -110,6 +60,7 @@ export default Reports = ({ navigation }) => {
 
   goNext = (item) => {
     setSelectedId(item.id);
+    item.editable = true;
     navigation.navigate("Update Profile", { item });
   };
 
@@ -117,7 +68,7 @@ export default Reports = ({ navigation }) => {
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View>
         <Text style={styles.title}>{item.username}</Text>
-        <Text style={[styles.title, { fontSize: 11 }]}>Emp Id : {item.id}</Text>
+        {/* <Text style={[styles.title, { fontSize: 11 }]}>Emp Id : {item.id}</Text> */}
       </View>
       <Icon
         name="keyboard-arrow-right"

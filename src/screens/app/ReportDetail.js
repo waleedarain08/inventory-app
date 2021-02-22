@@ -52,6 +52,7 @@ const ReportDetail = ({ route, navigation }) => {
       detail: route.params.item.detail,
       created_at: route.params.item.created_at,
       status: accept ? 2 : 3,
+      updated_by : state.user.user.username
     };
 
     const messages = {
@@ -68,7 +69,6 @@ const ReportDetail = ({ route, navigation }) => {
           data,
           state.user.access_token
         ).then((response) => {
-          console.log(response);
           setLoading(false);
           if (response.statusCode >= 400) {
             Alert.alert("Sorry!", response.errorMessage);

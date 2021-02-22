@@ -7,55 +7,48 @@ import {
   StatusBar,
   TouchableOpacity,
 } from "react-native";
-import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import { MyContext } from "../../utils/myContext";
+import BoxComponent from "./BoxComponent";
 
 const Dashboard = ({ navigation }) => {
   const [state, dispatch] = useContext(MyContext);
-  
-  
+
   if (state.user.user.role) {
     return (
       <View style={styles.main}>
-        <View style={{ flex: 0.7 }}></View>
+        <View style={{ flex: 0.3 }}></View>
         <View style={styles.row}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Scan-qr-code")}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="qrcode-scan" size={40} color="#fff" />
-            <Text style={styles.icontext}>Scan{"\n"}QR Code</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate("History", { isEmployee: 0 })}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="history" size={40} color="#fff" />
-            <Text style={styles.icontext}>All Requests{"\n"}Hisotry</Text>
-          </TouchableOpacity>
+          <BoxComponent
+            onPress={() => navigation.navigate("Add New Employee")}
+            icon={"open-in-new"}
+            title={"Add \n New Employee"}
+          />
         </View>
         <View style={styles.row}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Employees List")}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="format-list-bulleted" size={40} color="#fff" />
-            <Text style={styles.icontext}>Employees{"\n"}List</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          <BoxComponent
             onPress={() => navigation.navigate("Generate-qr-code")}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="qrcode" size={40} color="#fff" />
-            <Text style={styles.icontext}>Generate{"\n"}QR Code</Text>
-          </TouchableOpacity>
+            icon={"qrcode"}
+            title={"Generate\nQR Code"}
+          />
+          <BoxComponent
+            onPress={() => navigation.navigate("Employees List")}
+            icon={"format-list-bulleted"}
+            title={"Employees\nList"}
+          />
         </View>
-        <View style={{ flex: 0.7 }}></View>
+        <View style={styles.row}>
+          <BoxComponent
+            onPress={() => navigation.navigate("Scan-qr-code")}
+            icon={"qrcode-scan"}
+            title={"Scan\nQR Code"}
+          />
+          <BoxComponent
+            onPress={() => navigation.navigate("History", { isEmployee: 0 })}
+            icon={"history"}
+            title={"All Requests\nHistory"}
+          />
+        </View>
+        <View style={{ flex: 0.3 }}></View>
       </View>
     );
   } else {
@@ -63,40 +56,28 @@ const Dashboard = ({ navigation }) => {
       <View style={styles.main}>
         <View style={{ flex: 0.7 }}></View>
         <View style={styles.row}>
-          <TouchableOpacity
+          <BoxComponent
             onPress={() => navigation.navigate("Asset Request")}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="open-in-new" size={40} color="#fff" />
-            <Text style={styles.icontext}>Create{"\n"}Asset Request</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+            icon={"open-in-new"}
+            title={"Create\nAsset Request"}
+          />
+          <BoxComponent
             onPress={() => navigation.navigate("History", { isEmployee: 1 })}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="format-list-bulleted" size={40} color="#fff" />
-            <Text style={styles.icontext}>View My{"\n"}Requests Status</Text>
-          </TouchableOpacity>
+            icon={"format-list-bulleted"}
+            title={"Requests\nHistory"}
+          />
         </View>
         <View style={styles.row}>
-        <TouchableOpacity
+          {/* <BoxComponent
             onPress={() => navigation.navigate("Scan-qr-code")}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="qrcode-scan" size={40} color="#fff" />
-            <Text style={styles.icontext}>Scan{"\n"}QR Code</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+            icon={"qrcode-scan"}
+            title={"Scan \n QR Code"}
+          /> */}
+          <BoxComponent
             onPress={() => navigation.navigate("My QR")}
-            activeOpacity={0.8}
-            style={styles.column}
-          >
-            <Icon3 name="qrcode" size={40} color="#fff" />
-            <Text style={styles.icontext}>View{"\n"}My Qr Code</Text>
-          </TouchableOpacity>
+            icon={"qrcode"}
+            title={"View \n My Qr Code"}
+          />
         </View>
         <View style={{ flex: 0.7 }}></View>
       </View>
@@ -112,22 +93,6 @@ const styles = StyleSheet.create({
   row: {
     flex: 1,
     flexDirection: "row",
-  },
-  column: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#8E040A",
-    borderRadius: 8,
-    elevation: 4,
-    margin: 10,
-  },
-  icontext: {
-    color: "#fff",
-    fontSize: 16,
-    textAlign: "center",
-    margin: 10,
   },
 });
 
